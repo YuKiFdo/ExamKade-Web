@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { PdfViewerClient } from '@/components/PdfViewerClient';
-import { DownloadButton } from '@/components/DownloadButton';
+import { ViewerActions } from '@/components/ViewerActions';
+import { Button } from '@/components/ui/button';
 
 type Props = {
   params: Promise<{ docId: string }>;
@@ -15,10 +16,10 @@ export default async function ViewPage({ params, searchParams }: Props) {
   if (!fileId) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-12 text-center">
-        <p className="text-red-600">No file specified.</p>
-        <Link href="/" className="mt-4 inline-block text-teal-700 hover:underline">
+        <p className="text-red-600 font-medium">No file specified.</p>
+        <Button variant="ghost" className="mt-4" render={<Link href="/" />}>
           Back to home
-        </Link>
+        </Button>
       </div>
     );
   }
@@ -26,26 +27,28 @@ export default async function ViewPage({ params, searchParams }: Props) {
   const previewUrl = api.previewUrl(fileId);
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] flex-col bg-background">
-      <div className="flex items-center justify-between gap-4 border-b border-border bg-card px-4 py-3">
-        <Link
-          href="/"
-          className="text-sm font-medium text-muted-foreground hover:text-foreground hover:underline transition-colors"
+    <div className="flex min-h-[calc(100vh-4rem)] flex-col bg-slate-50/30 dark:bg-zinc-950/20">
+      {/* Sticky Document Control Bar */}
+      <div className="sticky top-16 z-30 flex items-center justify-between gap-4 border-b border-border/80 bg-background/85 backdrop-blur-md px-4 py-3 sm:px-6 shadow-sm">
+        <Button
+          variant="ghost"
+          size="sm"
+          render={<Link href="/" />}
+          className="gap-1.5 px-3 text-muted-foreground hover:text-foreground transition-all"
         >
-          ← Back
-        </Link>
-        <div className="flex gap-2">
-          <DownloadButton fileId={fileId} fileName="document.pdf" />
-          <Link
-            href="/login"
-            className="rounded-lg border border-border px-3 py-1.5 text-sm text-foreground hover:bg-accent transition-colors"
-          >
-            Sign in
-          </Link>
-        </div>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M13 8H3M6 5L3 8L6 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Back
+        </Button>
+        <ViewerActions fileId={fileId} />
       </div>
-      <div className="flex-1 p-4">
-        <PdfViewerClient url={previewUrl} />
+
+      {/* Main View Area */}
+      <div className="flex-1 p-4 sm:p-6 lg:p-8 flex justify-center items-start">
+        <div className="w-full max-w-5xl">
+          <PdfViewerClient url={previewUrl} />
+        </div>
       </div>
     </div>
   );

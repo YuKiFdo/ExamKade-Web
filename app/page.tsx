@@ -2,8 +2,7 @@ import { api, ROOT_TYPE_ICONS } from "@/lib/api";
 import { CategoryTile } from "@/components/CategoryTile";
 import { DocumentCard } from "@/components/DocumentCard";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { HomeHero } from "@/components/HomeHero";
 import Link from "next/link";
 
 export default async function HomePage() {
@@ -38,71 +37,7 @@ export default async function HomePage() {
           backgroundSize: '60px 60px'
         }} />
 
-        <div className="relative mx-auto max-w-7xl px-4 py-20 text-center lg:px-6 lg:py-28">
-          <div className="animate-fade-in-up">
-            <Badge variant="secondary" className="mb-5 gap-1.5 px-3 py-1 text-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-              Sri Lanka Education Platform
-            </Badge>
-          </div>
-
-          <h1 className="animate-fade-in-up text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl stagger-1" style={{ opacity: 0 }}>
-            <span className="text-foreground">All Your Study</span>
-            <br />
-            <span className="text-gradient">Resources in One Place</span>
-          </h1>
-
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground animate-fade-in-up stagger-2" style={{ opacity: 0 }}>
-            Past papers, model papers, term tests, syllabi, teacher&apos;s guides, text books
-            and government gazette — preview free, download with subscription.
-          </p>
-
-          {/* Hero search */}
-          <div className="mx-auto mt-8 max-w-xl animate-fade-in-up stagger-3" style={{ opacity: 0 }}>
-            <form action="/search" className="relative">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-              >
-                <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M13.5 13.5L17 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-              <Input
-                name="q"
-                type="search"
-                placeholder="Search past papers, guides, gazette..."
-                className="h-12 w-full rounded-xl pl-12 pr-28 text-base shadow-sm"
-              />
-              <Button
-                type="submit"
-                size="sm"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-lg"
-              >
-                Search
-              </Button>
-            </form>
-          </div>
-
-          {/* Quick stats */}
-          <div className="mx-auto mt-10 flex max-w-md items-center justify-center gap-8 animate-fade-in-up stagger-4" style={{ opacity: 0 }}>
-            {[
-              { value: '7', label: 'Categories' },
-              { value: '3', label: 'Languages' },
-              { value: 'Free', label: 'Preview' },
-            ].map((stat, i) => (
-              <div key={stat.label} className="flex items-center gap-8">
-                {i > 0 && <div className="h-8 w-px bg-border -ml-8" />}
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-gradient">{stat.value}</p>
-                  <p className="text-xs text-muted-foreground">{stat.label}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <HomeHero />
       </section>
 
       {/* Categories Grid */}
@@ -114,15 +49,14 @@ export default async function HomePage() {
           </div>
         </div>
         <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-          {roots.map((cat, i) => (
-            <div key={cat.slug} className={`animate-fade-in-up stagger-${Math.min(i + 1, 7)}`} style={{ opacity: 0 }}>
-              <CategoryTile
-                slug={cat.slug}
-                name={cat.name}
-                icon={ROOT_TYPE_ICONS[cat.rootType] || 'FileText'}
-                description={cat.description || undefined}
-              />
-            </div>
+          {roots.map((cat) => (
+            <CategoryTile
+              key={cat.slug}
+              slug={cat.slug}
+              name={cat.name}
+              icon={ROOT_TYPE_ICONS[cat.rootType] || 'FileText'}
+              description={cat.description || undefined}
+            />
           ))}
         </div>
       </section>

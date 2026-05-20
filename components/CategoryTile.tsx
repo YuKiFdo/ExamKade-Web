@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import * as LucideIcons from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { motion } from 'framer-motion';
 
 const GRADIENT_MAP: Record<string, string> = {
   'past-papers': 'from-violet-500/10 to-purple-500/10 dark:from-violet-500/20 dark:to-purple-500/20',
@@ -41,39 +44,47 @@ export function CategoryTile({
 
   return (
     <Link href={`/category/${slug}`} className="group block">
-      <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/30">
-        {/* Hover gradient overlay */}
-        <div
-          className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
-        />
-
-        <CardContent className="relative flex flex-col items-center p-6 text-center">
-          {/* Icon */}
+      <motion.div
+        whileHover={{ y: -6, scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      >
+        <Card className="relative overflow-hidden transition-colors duration-300 hover:border-primary/40 shadow-sm hover:shadow-xl dark:shadow-black/20">
+          {/* Hover gradient overlay */}
           <div
-            className={`flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${iconBg} text-white shadow-md transition-transform duration-300 group-hover:scale-110`}
-          >
-            {IconComponent ? <IconComponent className="size-7" /> : null}
-          </div>
+            className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-100`}
+          />
 
-          <h2 className="mt-4 text-sm font-semibold text-card-foreground">
-            {name}
-          </h2>
+          <CardContent className="relative flex flex-col items-center p-6 text-center">
+            {/* Icon */}
+            <motion.div
+              className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${iconBg} text-white shadow-lg`}
+              whileHover={{ rotate: 5, scale: 1.05 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+            >
+              {IconComponent ? <IconComponent className="size-6" /> : null}
+            </motion.div>
 
-          {description && (
-            <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2">
-              {description}
-            </p>
-          )}
+            <h2 className="mt-4 text-sm font-semibold text-card-foreground group-hover:text-primary transition-colors duration-200">
+              {name}
+            </h2>
 
-          {/* Arrow on hover */}
-          <div className="mt-3 flex items-center gap-1 text-xs font-medium text-primary opacity-0 transition-all duration-300 group-hover:opacity-100">
-            Browse
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M2 6H10M7 3L10 6L7 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-        </CardContent>
-      </Card>
+            {description && (
+              <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2 px-1">
+                {description}
+              </p>
+            )}
+
+            {/* Arrow on hover */}
+            <div className="mt-3 flex items-center gap-1 text-xs font-semibold text-primary opacity-0 transition-all duration-300 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0">
+              <span>Browse</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="transition-transform duration-200 group-hover:translate-x-0.5">
+                <path d="M2 6H10M7 3L10 6L7 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </Link>
   );
 }
