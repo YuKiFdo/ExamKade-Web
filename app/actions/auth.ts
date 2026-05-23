@@ -76,7 +76,7 @@ export async function getMeAction() {
   });
   
   if (!res.ok) {
-    throw new Error('Unauthorized');
+    return null;
   }
   
   return res.json();
