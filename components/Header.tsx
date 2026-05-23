@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { ROOT_TYPE_ICONS } from '@/lib/api';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { getMeAction, logoutAction } from '@/app/actions/auth';
 import { SearchBar } from '@/components/SearchBar';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
@@ -17,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { User, LogOut, Settings } from 'lucide-react';
+import { User, LogOut, Settings, FileText } from 'lucide-react';
 
 export function Header({ initialRoots }: { initialRoots?: any[] }) {
   const router = useRouter();
@@ -58,7 +59,7 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    api.getMe().then(setUser).catch(() => setUser(null));
+    getMeAction().then(setUser).catch(() => setUser(null));
   }, [pathname]);
 
   useEffect(() => {
@@ -72,80 +73,85 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-lg">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 lg:px-6">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 font-bold group">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-lg text-primary-foreground shadow-sm transition-transform group-hover:scale-105">
-              F
-            </span>
-            <span className="hidden text-lg sm:inline">
-              <span className="text-gradient font-extrabold">Fonix</span>{' '}
-              <span className="text-muted-foreground font-semibold">Edu</span>
-            </span>
-          </Link>
+      <header className="sticky top-0 z-50 border-b border-border/50 bg-white/80 dark:bg-background/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 lg:px-6">
+          {/* Left: Logo */}
+          <div className="flex lg:w-[250px] items-center justify-start shrink-0">
+            <Link href="/" className="inline-flex items-center gap-2 font-black tracking-tight group">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-600 text-white shadow-md transition-transform group-hover:scale-105">
+                <FileText className="size-5" />
+              </span>
+              <span className="text-xl">
+                <span className="text-foreground">Exam</span>
+                <span className="text-teal-600">Kade</span>
+              </span>
+            </Link>
+          </div>
 
-          {/* Desktop nav */}
-          <nav className="hidden items-center gap-1 lg:flex">
-            {/* Categories dropdown */}
+          {/* Center: Desktop nav */}
+          <nav className="hidden lg:flex flex-1 justify-center items-center gap-6 xl:gap-8">
+            <Link href="/" className="text-[15px] font-bold text-foreground transition-colors hover:text-teal-600">
+              Home
+            </Link>
+            
             <div
-              className="relative"
+              className="relative group"
               onMouseEnter={() => setMegaOpen(true)}
               onMouseLeave={() => setMegaOpen(false)}
             >
               <button
                 type="button"
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
-                  megaOpen ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
+                className={`flex items-center gap-1.5 text-[15px] font-bold transition-colors hover:text-teal-600 ${
+                  megaOpen ? 'text-teal-600' : 'text-foreground'
                 }`}
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="opacity-60">
-                  <rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
-                  <rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
-                  <rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
-                  <rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
-                </svg>
                 Categories
-                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className={`transition-transform duration-200 ${megaOpen ? 'rotate-180' : ''}`}>
-                  <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  className={`transition-transform duration-200 ${megaOpen ? 'rotate-180 text-teal-600' : 'text-foreground/50'}`}
+                >
+                  <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
 
               <AnimatePresence>
                 {megaOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
                     transition={{ duration: 0.15, ease: 'easeOut' }}
-                    className="absolute left-1/2 top-full z-50 mt-1 w-[540px] -translate-x-1/2"
+                    className="absolute left-1/2 top-[calc(100%+1.5rem)] z-50 w-[540px] -translate-x-1/2 pt-2"
                   >
-                    <div className="rounded-xl border border-border bg-popover p-5 shadow-xl">
-                      <div className="grid grid-cols-3 gap-5">
+                    <div className="rounded-2xl border border-border/50 bg-white dark:bg-slate-900 p-6 shadow-2xl">
+                      <div className="grid grid-cols-3 gap-6">
                         {categoryGroups.map((group) => (
                           <div key={group.title}>
-                            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            <p className="mb-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                               {group.title}
                             </p>
-                            <div className="space-y-0.5">
+                            <div className="space-y-1">
                               {group.items.map((item) => (
                                 <Link
                                   key={item.slug}
                                   href={`/category/${item.slug}`}
                                   onClick={() => setMegaOpen(false)}
-                                  className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground ${
+                                  className={`group flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${
                                     pathname?.includes(item.slug)
-                                      ? 'bg-accent text-accent-foreground font-medium'
-                                      : 'text-muted-foreground'
+                                      ? 'text-teal-600 bg-teal-50 dark:bg-teal-900/20'
+                                      : 'text-slate-600 dark:text-slate-300'
                                   }`}
                                 >
-                                  <span className="flex size-5 shrink-0 items-center justify-center text-primary/70">
+                                  <span className={`flex size-5 shrink-0 items-center justify-center transition-colors ${pathname?.includes(item.slug) ? 'text-teal-500' : 'text-slate-300 dark:text-slate-600 group-hover:text-teal-500'}`}>
                                     {(() => {
                                       const Icon = (require('lucide-react') as any)[item.icon];
-                                      return Icon ? <Icon className="size-4" /> : null;
+                                      return Icon ? <Icon className="size-4" strokeWidth={2.5} /> : null;
                                     })()}
                                   </span>
-                                  <span>{item.name}</span>
+                                  {item.name}
                                 </Link>
                               ))}
                             </div>
@@ -157,18 +163,16 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                 )}
               </AnimatePresence>
             </div>
- 
-            {/* Quick links */}
+
             {roots
-              .filter((n) => ['past-papers', 'teacher-guides', 'gazette', 'government-gazette'].includes(n.slug))
+              .filter((n) => ['past-papers', 'teacher-guides', 'model-papers'].includes(n.slug))
+              .slice(0, 3)
               .map((item) => (
                 <Link
                   key={item.slug}
                   href={`/category/${item.slug}`}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
-                    pathname?.includes(item.slug)
-                      ? 'bg-accent text-accent-foreground'
-                      : 'text-muted-foreground'
+                  className={`text-[15px] font-bold transition-colors whitespace-nowrap ${
+                    pathname?.includes(item.slug) ? 'text-teal-600' : 'text-foreground hover:text-teal-600'
                   }`}
                 >
                   {item.name}
@@ -176,34 +180,40 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
               ))}
           </nav>
 
-          {/* Right side */}
-          <div className="flex items-center gap-2">
-            <SearchBar />
-            <ThemeToggle />
+          {/* Right: Controls */}
+          <div className="flex lg:w-[250px] items-center justify-end gap-3 lg:gap-5 shrink-0">
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
+            
             {user ? (
               <div className="flex items-center gap-3">
-                <span className="hidden text-sm text-muted-foreground sm:inline font-medium max-w-[120px] truncate">
+                <span className="hidden text-sm font-bold sm:inline max-w-[120px] truncate text-foreground">
                   {user.name ? user.name : `+${user.mobile}`}
                 </span>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-1.5">
-                      <User className="size-4 shrink-0" />
-                      Account
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48 bg-popover border border-border">
-                    <DropdownMenuItem asChild>
-                      <Link href="/account" className="flex w-full items-center gap-2 px-3 py-2 text-sm font-medium hover:bg-accent cursor-pointer">
-                        <Settings className="size-4" />
-                        My Account
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator className="bg-border" />
+                  <DropdownMenuTrigger
+                    render={
+                      <Button variant="outline" className="rounded-full gap-2 border-2 px-5 font-bold hover:bg-slate-50 dark:hover:bg-slate-800">
+                        <User className="size-4 shrink-0" />
+                        Account
+                      </Button>
+                    }
+                  />
+                  <DropdownMenuContent align="end" className="w-56 rounded-2xl bg-white dark:bg-slate-900 border border-border/50 shadow-xl p-2">
+                    <DropdownMenuItem
+                      render={
+                        <Link href="/account" className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer">
+                          <Settings className="size-4" />
+                          My Account
+                        </Link>
+                      }
+                    />
+                    <DropdownMenuSeparator className="bg-border/50 my-1" />
                     <DropdownMenuItem 
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/5 hover:text-destructive cursor-pointer"
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 cursor-pointer"
                       onClick={async () => {
-                        await api.logout();
+                        await logoutAction();
                         setUser(null);
                         router.push('/');
                         router.refresh();
@@ -216,8 +226,8 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                 </DropdownMenu>
               </div>
             ) : (
-              <Button size="sm" render={<Link href="/login" />}>
-                Sign In
+              <Button variant="outline" className="rounded-full px-8 font-bold border-2 hover:bg-slate-50 dark:hover:bg-slate-800" render={<Link href="/login" />}>
+                Login
               </Button>
             )}
 
@@ -225,16 +235,16 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-9 w-9 lg:hidden"
+              className="h-10 w-10 lg:hidden rounded-full hover:bg-slate-50 dark:hover:bg-slate-800"
               onClick={() => setMobileOpen(!mobileOpen)}
             >
               {mobileOpen ? (
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               ) : (
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M3 6H17M3 10H17M3 14H17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 7H20M4 12H20M4 17H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               )}
             </Button>
@@ -258,35 +268,43 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className="fixed right-0 top-0 z-50 flex h-full w-80 max-w-[85vw] flex-col bg-popover border-l border-border overflow-y-auto shadow-2xl"
+              className="fixed right-0 top-0 z-50 flex h-full w-80 max-w-[85vw] flex-col bg-white dark:bg-slate-900 border-l border-border/50 overflow-y-auto shadow-2xl"
             >
-              <div className="flex items-center justify-between border-b border-border p-4">
-                <span className="font-extrabold text-gradient">Fonix Edu</span>
-                <Button variant="ghost" size="icon" onClick={() => setMobileOpen(false)}>
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <div className="flex items-center justify-between border-b border-border/50 p-5">
+                <div className="flex items-center gap-2 font-black tracking-tight group">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-600 text-white shadow-md">
+                    <FileText className="size-4" />
+                  </span>
+                  <span className="text-lg">
+                    <span className="text-foreground">Exam</span>
+                    <span className="text-teal-600">Kade</span>
+                  </span>
+                </div>
+                <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setMobileOpen(false)}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                   </svg>
                 </Button>
               </div>
-              <div className="flex-1 p-4 space-y-5">
+              <div className="flex-1 p-5 space-y-6">
                 {categoryGroups.map((group) => (
                   <div key={group.title}>
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    <p className="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                       {group.title}
                     </p>
-                    <div className="space-y-0.5">
+                    <div className="space-y-1">
                       {group.items.map((item) => (
                         <Link
                           key={item.slug}
                           href={`/category/${item.slug}`}
-                          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent ${
+                          className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${
                             pathname?.includes(item.slug)
-                              ? 'bg-accent text-accent-foreground'
-                              : 'text-muted-foreground'
+                              ? 'text-teal-600 bg-teal-50 dark:bg-teal-900/20'
+                              : 'text-foreground'
                           }`}
                           onClick={() => setMobileOpen(false)}
                         >
-                          <span className="flex size-5 shrink-0 items-center justify-center text-primary/70">
+                          <span className="flex size-5 shrink-0 items-center justify-center text-teal-600/70">
                             {(() => {
                               const Icon = (require('lucide-react') as any)[item.icon];
                               return Icon ? <Icon className="size-4" /> : null;
@@ -299,21 +317,21 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                   </div>
                 ))}
                 {user && (
-                  <div className="px-3 py-1 text-sm font-semibold text-muted-foreground">
+                  <div className="px-3 py-1 text-sm font-bold text-muted-foreground">
                     Hello, <span className="text-foreground">{user.name || `+${user.mobile}`}</span>
                   </div>
                 )}
-                <Separator />
+                <Separator className="bg-border/50" />
                 {user ? (
-                  <div className="space-y-2 w-full">
-                    <Button variant="outline" className="w-full" render={<Link href="/account" onClick={() => setMobileOpen(false)} />}>
+                  <div className="space-y-3 w-full">
+                    <Button variant="outline" className="w-full rounded-full border-2 font-bold hover:bg-slate-50 dark:hover:bg-slate-800" render={<Link href="/account" onClick={() => setMobileOpen(false)} />}>
                       My Account
                     </Button>
                     <Button 
                       variant="destructive" 
-                      className="w-full" 
+                      className="w-full rounded-full font-bold bg-red-600 hover:bg-red-700" 
                       onClick={async () => {
-                        await api.logout();
+                        await logoutAction();
                         setUser(null);
                         setMobileOpen(false);
                         router.push('/');
@@ -324,8 +342,8 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                     </Button>
                   </div>
                 ) : (
-                  <Button className="w-full" render={<Link href="/login" onClick={() => setMobileOpen(false)} />}>
-                    Sign In
+                  <Button className="w-full rounded-full font-bold bg-teal-600 hover:bg-teal-700 text-white" render={<Link href="/login" onClick={() => setMobileOpen(false)} />}>
+                    Login
                   </Button>
                 )}
               </div>

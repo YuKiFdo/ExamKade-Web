@@ -1,12 +1,12 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
+import { motion, Variants } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 export function HomeHero() {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -17,7 +17,7 @@ export function HomeHero() {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 16 },
     visible: {
       opacity: 1,
@@ -35,86 +35,67 @@ export function HomeHero() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="relative mx-auto max-w-7xl px-4 py-20 text-center lg:px-6 lg:py-28"
+      className="relative mx-auto max-w-7xl px-4 py-16 lg:px-6 lg:py-28"
     >
-      {/* Badge */}
-      <motion.div variants={itemVariants} className="flex justify-center">
-        <Badge variant="secondary" className="mb-5 gap-1.5 px-3 py-1 text-sm bg-muted/60 border-primary/10 shadow-xs">
-          <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-          Sri Lanka Education Platform
-        </Badge>
-      </motion.div>
+      <div className="grid lg:grid-cols-2 gap-12 items-center">
+        {/* Left Column: Text & Search */}
+        <div className="text-left flex flex-col items-start">
+          
+          {/* Main Title */}
+          <motion.h1
+            variants={itemVariants}
+            className="text-4xl font-black tracking-tight sm:text-5xl lg:text-[4rem] lg:leading-[1.1] text-foreground text-left max-w-2xl"
+          >
+            Best Place to Find Your <span className="text-orange-500 dark:text-orange-400">Study Resources</span>
+          </motion.h1>
 
-      {/* Main Title */}
-      <motion.h1
-        variants={itemVariants}
-        className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-foreground"
-      >
-        All Your Study
-        <br />
-        <span className="text-gradient">Resources in One Place</span>
-      </motion.h1>
+          {/* Subtitle */}
+          <motion.p
+            variants={itemVariants}
+            className="mt-6 max-w-lg text-sm sm:text-base text-muted-foreground leading-relaxed text-left"
+          >
+            Discover thousands of past papers, model papers, term tests, syllabi, teacher&apos;s guides, text books and government <br /> gazette preview free, download with subscription.
+          </motion.p>
 
-      {/* Subtitle */}
-      <motion.p
-        variants={itemVariants}
-        className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground leading-relaxed"
-      >
-        Past papers, model papers, term tests, syllabi, teacher&apos;s guides, text books
-        and government gazette — preview free, download with subscription.
-      </motion.p>
+          {/* Hero search */}
+          <motion.div variants={itemVariants} className="mt-10 w-full max-w-md">
+            <form action="/search" className="relative group flex items-center">
+              <div className="absolute inset-0 bg-white dark:bg-slate-800/80 dark:border dark:border-slate-700 rounded-full shadow-sm" />
+              <div className="relative flex w-full h-14 items-center pl-4 pr-1.5">
+                <Input
+                  name="q"
+                  type="search"
+                  placeholder="Search past papers, guides..."
+                  className="h-full w-full border-none bg-transparent shadow-none focus-visible:ring-0 px-2 text-sm text-foreground placeholder:text-muted-foreground"
+                />
+                <Button
+                  type="submit"
+                  className="h-11 rounded-full px-8 bg-teal-600 hover:bg-teal-700 text-white font-medium shadow-md transition-all gap-2"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  Search
+                </Button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
 
-      {/* Hero search */}
-      <motion.div variants={itemVariants} className="mx-auto mt-8 max-w-xl">
-        <form action="/search" className="relative group">
-          <div className="absolute inset-0 -m-1 bg-gradient-to-r from-primary/10 to-chart-2/10 rounded-2xl blur-lg opacity-40 group-hover:opacity-60 transition-opacity duration-300 pointer-events-none" />
-          <div className="relative">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary"
-            >
-              <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M13.5 13.5L17 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            <Input
-              name="q"
-              type="search"
-              placeholder="Search past papers, guides, gazette..."
-              className="h-12 w-full rounded-xl pl-12 pr-28 text-base shadow-xs border-border/80 focus-visible:border-primary/50 transition-all bg-background/80 backdrop-blur-xs"
-            />
-            <Button
-              type="submit"
-              size="sm"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-lg"
-            >
-              Search
-            </Button>
-          </div>
-        </form>
-      </motion.div>
-
-      {/* Quick stats */}
-      <motion.div
-        variants={itemVariants}
-        className="mx-auto mt-12 flex max-w-md items-center justify-center gap-8 rounded-2xl border border-border bg-card/40 backdrop-blur-md px-6 py-4 shadow-xs"
-      >
-        {[
-          { value: '7', label: 'Categories' },
-          { value: '3', label: 'Languages' },
-          { value: 'Free', label: 'Preview' },
-        ].map((stat, i) => (
-          <div key={stat.label} className="flex items-center gap-8">
-            {i > 0 && <div className="h-8 w-px bg-border/80 -ml-8" />}
-            <div className="text-center">
-              <p className="text-2xl font-bold text-gradient">{stat.value}</p>
-              <p className="text-xs text-muted-foreground font-medium mt-0.5">{stat.label}</p>
-            </div>
-          </div>
-        ))}
-      </motion.div>
+        {/* Right Column: Illustration */}
+        <motion.div variants={itemVariants} className="hidden lg:flex justify-center items-center relative">
+          <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent rounded-full blur-3xl opacity-30 -z-10" />
+          <Image 
+            src="/hero-illustration.png"
+            alt="Student studying illustration"
+            width={600}
+            height={600}
+            priority
+            className="w-full max-w-lg object-contain mix-blend-multiply dark:mix-blend-normal dark:bg-white dark:rounded-[3rem] dark:p-8 dark:shadow-2xl hover:scale-105 transition-all duration-700"
+          />
+        </motion.div>
+      </div>
     </motion.div>
   );
 }

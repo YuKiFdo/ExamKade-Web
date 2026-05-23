@@ -160,4 +160,11 @@ export const adminApi = {
     }),
   deleteCategory: (id: string) =>
     adminFetch(`/categories/${id}`, { method: 'DELETE' }),
+  getLoginWarning: () =>
+    adminFetch<{ showWarning: boolean }>('/settings/login-warning'),
+  toggleLoginWarning: (showWarning: boolean) =>
+    adminFetch<{ success: boolean }>('/settings/login-warning', {
+      method: 'POST',
+      body: JSON.stringify({ showWarning }),
+    }),
 };

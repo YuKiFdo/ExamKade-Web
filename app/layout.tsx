@@ -14,11 +14,28 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Fonix Edu — Sri Lanka Exam Papers & School Resources",
-    template: "%s | Fonix Edu",
+    default: "ExamKade — Sri Lanka's Premium Education Resource Platform",
+    template: "%s | ExamKade",
   },
   description:
-    "Past papers, model papers, term test papers, syllabus, teacher guides, text books and government gazette for Sri Lankan students.",
+    "The ultimate destination for Sri Lankan students. Access past papers, model papers, term test papers, syllabuses, teacher guides, text books, and government gazettes.",
+  keywords: [
+    "ExamKade", "Examකඩේ", "Sri Lanka", "Past Papers", "Model Papers", "Term Test Papers", "Syllabus", "Teacher Guides", "Text Books", "Government Gazette", "GCE O/L", "GCE A/L", "Education"
+  ],
+  authors: [{ name: "ExamKade" }],
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://examkade.lk",
+    title: "ExamKade — Sri Lanka's Premium Education Resource Platform",
+    description: "The ultimate destination for Sri Lankan students. Access past papers, model papers, term test papers, syllabuses, teacher guides, text books, and government gazettes.",
+    siteName: "ExamKade",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ExamKade — Sri Lanka's Premium Education Resource Platform",
+    description: "The ultimate destination for Sri Lankan students. Access past papers, model papers, term test papers, syllabuses, teacher guides, text books, and government gazettes.",
+  },
 };
 
 export default async function RootLayout({

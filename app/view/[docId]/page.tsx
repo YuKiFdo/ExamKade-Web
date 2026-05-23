@@ -13,6 +13,17 @@ export default async function ViewPage({ params, searchParams }: Props) {
   const { docId } = await params;
   const { file: fileId } = await searchParams;
 
+  const data = await api.getDocument(docId).catch(() => null);
+  const document = data?.document;
+
+  let formattedFileName = 'document.pdf';
+  if (document) {
+    const file = document.files?.find((f) => f.id === fileId);
+    const categoryName = document.category?.name || 'Document';
+    const extension = file?.fileName?.split('.').pop() || 'pdf';
+    formattedFileName = `${categoryName} - ${document.title} - ExamKade.${extension}`;
+  }
+
   if (!fileId) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-12 text-center">
@@ -29,19 +40,21 @@ export default async function ViewPage({ params, searchParams }: Props) {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col bg-slate-50/30 dark:bg-zinc-950/20">
       {/* Sticky Document Control Bar */}
-      <div className="sticky top-16 z-30 flex items-center justify-between gap-4 border-b border-border/80 bg-background/85 backdrop-blur-md px-4 py-3 sm:px-6 shadow-sm">
-        <Button
-          variant="ghost"
-          size="sm"
-          render={<Link href="/" />}
-          className="gap-1.5 px-3 text-muted-foreground hover:text-foreground transition-all"
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M13 8H3M6 5L3 8L6 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          Back
-        </Button>
-        <ViewerActions fileId={fileId} />
+      <div className="sticky top-20 z-30 w-full border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md shadow-sm">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 lg:px-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            render={<Link href="/" />}
+            className="gap-1.5 px-4 font-bold rounded-full text-slate-500 dark:text-slate-400 hover:text-teal-600 hover:bg-teal-50 dark:hover:bg-teal-900/30 transition-all"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M13 8H3M6 5L3 8L6 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Back
+          </Button>
+          <ViewerActions fileId={fileId} fileName={formattedFileName} />
+        </div>
       </div>
 
       {/* Main View Area */}

@@ -5,74 +5,67 @@ import type { Document } from '@/lib/api';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
-
-const ACCENT_COLORS: Record<string, string> = {
-  PAST_PAPERS: 'bg-violet-500',
-  MODEL_PAPERS: 'bg-blue-500',
-  TERM_TEST: 'bg-cyan-500',
-  SYLLABUS: 'bg-emerald-500',
-  TEACHERS_GUIDE: 'bg-amber-500',
-  TEXT_BOOKS: 'bg-rose-500',
-  GAZETTE: 'bg-yellow-500',
-};
+import { FileText } from 'lucide-react';
 
 export function DocumentCard({ doc }: { doc: Document }) {
   const facets = doc.facets?.map((f) => f.facetValue.label).join(' · ') || '';
-  const rootType = doc.category?.rootType || 'PAST_PAPERS';
-  const accentColor = ACCENT_COLORS[rootType] || ACCENT_COLORS.PAST_PAPERS;
 
   return (
-    <Link href={`/doc/${doc.slug}`} className="group block">
+    <Link href={`/doc/${doc.slug}`} className="group block h-full">
       <motion.div
-        whileHover={{ y: -4, scale: 1.01 }}
-        whileTap={{ scale: 0.99 }}
-        transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+        whileHover={{ y: -4 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+        className="h-full"
       >
-        <Card className="relative flex overflow-hidden transition-colors duration-300 hover:border-primary/30 shadow-sm hover:shadow-lg dark:shadow-black/10">
-          {/* Left accent bar */}
-          <div className={`w-1 shrink-0 ${accentColor} transition-all duration-300 group-hover:w-1.5`} />
-
-          <div className="flex flex-1 flex-col p-5">
+        <Card className="relative h-full flex flex-col overflow-hidden bg-white dark:bg-card border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:border-teal-500/30 transition-all duration-300 rounded-2xl p-6">
+          
+          <div className="flex items-start justify-between mb-4">
             {/* Category badge */}
             {doc.category && (
-              <Badge variant="secondary" className="mb-3 w-fit text-xs font-semibold">
+              <Badge variant="secondary" className="bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 font-bold border-none px-3 py-1 text-xs">
                 {doc.category.name}
               </Badge>
             )}
+            
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 text-slate-400 group-hover:bg-teal-500 group-hover:text-white transition-colors duration-300">
+              <FileText className="size-4" />
+            </div>
+          </div>
 
-            {/* Title */}
-            <h3 className="font-semibold leading-snug text-card-foreground transition-colors group-hover:text-primary line-clamp-2">
-              {doc.title}
-            </h3>
+          {/* Title */}
+          <h3 className="text-base font-bold leading-snug text-slate-800 dark:text-slate-100 transition-colors group-hover:text-teal-600 line-clamp-2 mb-2">
+            {doc.title}
+          </h3>
 
-            {/* Facets */}
-            {facets && (
-              <p className="mt-2 text-xs text-muted-foreground line-clamp-1">{facets}</p>
-            )}
+          {/* Facets */}
+          {facets && (
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium line-clamp-1 mb-6">
+              {facets}
+            </p>
+          )}
 
-            {/* Bottom row */}
-            <div className="mt-auto flex items-center justify-between pt-4 border-t border-border/50">
-              {doc.files && doc.files.length > 0 && (
-                <div className="flex gap-1.5">
-                  {doc.files.map((f) => (
-                    <Badge key={f.id} variant="outline" className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 border-primary/20 text-primary bg-primary/5">
-                      {f.medium}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-              <div className="ml-auto flex items-center gap-1 text-xs text-primary font-medium opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                <span>View</span>
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  className="transition-transform duration-200 group-hover:translate-x-0.5"
-                >
-                  <path d="M3 8H13M10 5L13 8L10 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+          {/* Bottom row */}
+          <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+            {doc.files && doc.files.length > 0 && (
+              <div className="flex gap-1.5 flex-wrap">
+                {doc.files.map((f) => (
+                  <Badge key={f.id} variant="outline" className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400">
+                    {f.medium}
+                  </Badge>
+                ))}
               </div>
+            )}
+            <div className="ml-auto flex items-center gap-1 text-xs text-teal-600 font-bold opacity-0 transition-all duration-300 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0">
+              <span>View</span>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 16 16"
+                fill="none"
+              >
+                <path d="M3 8H13M10 5L13 8L10 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
           </div>
         </Card>

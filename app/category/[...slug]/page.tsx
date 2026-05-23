@@ -48,43 +48,47 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 lg:px-6">
-      {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground">
-        <Link href="/" className="transition-colors hover:text-foreground">
-          Home
-        </Link>
-        {data.breadcrumbs.map((b, i) => (
-          <span key={b.id} className="flex items-center gap-1.5">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="text-muted-foreground/50">
-              <path d="M4 2L8 6L4 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <Link
-              href={`/category/${slug.slice(0, i + 1).join('/')}`}
-              className={`transition-colors hover:text-foreground ${
-                i === data.breadcrumbs.length - 1 ? 'text-foreground font-medium' : ''
-              }`}
-            >
-              {b.name}
-            </Link>
-          </span>
-        ))}
-      </nav>
+      {/* Page Header Area */}
+      <div className="mb-8 rounded-[2rem] bg-gradient-to-tr from-slate-100 to-teal-50 dark:from-slate-900/80 dark:to-teal-900/30 p-8 sm:p-10 border border-slate-200 dark:border-slate-800 shadow-sm">
+        {/* Breadcrumb */}
+        <nav className="mb-8 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-500">
+          <Link href="/" className="transition-colors hover:text-teal-600 flex items-center gap-1.5">
+            <LucideIcons.Home className="size-4" />
+            Home
+          </Link>
+          {data.breadcrumbs.map((b, i) => (
+            <span key={b.id} className="flex items-center gap-2">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="text-slate-300 dark:text-slate-600">
+                <path d="M4 2L8 6L4 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <Link
+                href={`/category/${slug.slice(0, i + 1).join('/')}`}
+                className={`transition-colors hover:text-teal-600 ${
+                  i === data.breadcrumbs.length - 1 ? 'text-slate-800 dark:text-slate-200 font-bold' : ''
+                }`}
+              >
+                {b.name}
+              </Link>
+            </span>
+          ))}
+        </nav>
 
-      {/* Header */}
-      <div className="flex items-start gap-4 mb-8">
-        {rootIconName && (
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            {(() => {
-              const Icon = (LucideIcons as any)[rootIconName];
-              return Icon ? <Icon className="size-6" /> : null;
-            })()}
-          </span>
-        )}
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">{title}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Browse and preview documents. Download requires mobile subscription.
-          </p>
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6">
+          {rootIconName && (
+            <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 text-teal-600 shadow-sm border border-slate-100 dark:border-slate-700">
+              {(() => {
+                const Icon = (LucideIcons as any)[rootIconName];
+                return Icon ? <Icon className="size-8 stroke-[1.5]" /> : null;
+              })()}
+            </span>
+          )}
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-black text-slate-800 dark:text-slate-100 tracking-tight">{title}</h1>
+            <p className="mt-2 text-base text-slate-500 dark:text-slate-400 font-medium max-w-xl">
+              Browse and preview documents. Download requires mobile subscription.
+            </p>
+          </div>
         </div>
       </div>
 

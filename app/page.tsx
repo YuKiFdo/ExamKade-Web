@@ -23,53 +23,40 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-border">
-        {/* Background decorations */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background dark:from-primary/10" />
-        <div className="absolute inset-0 opacity-40">
-          <div className="absolute top-20 left-[10%] h-72 w-72 rounded-full bg-primary/10 blur-[100px] animate-float" />
-          <div className="absolute bottom-10 right-[15%] h-64 w-64 rounded-full bg-chart-2/10 blur-[80px] animate-float" style={{ animationDelay: '3s' }} />
-        </div>
-
-        {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{
-          backgroundImage: `linear-gradient(hsl(var(--primary) / 0.3) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.3) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px'
-        }} />
-
+      <section className="relative overflow-hidden border-b border-border bg-gradient-to-br from-[#FFF5F0] via-background to-[#F0F2FF] dark:from-background dark:to-background">
         <HomeHero />
       </section>
 
       {/* Categories Grid */}
-      <section className="mx-auto max-w-7xl px-4 py-14 lg:px-6">
-        <div className="flex items-end justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-bold text-foreground">Browse by Category</h2>
-            <p className="mt-1.5 text-sm text-muted-foreground">Find exactly what you need for your studies</p>
+      <section className="bg-slate-50/50 dark:bg-slate-900/20 py-20 border-b border-border/50">
+        <div className="mx-auto max-w-7xl px-4 lg:px-6">
+          <div className="mb-12 text-center sm:text-left flex items-center justify-between">
+            <h2 className="text-3xl font-extrabold text-foreground">
+              Browse by <span className="text-orange-500 dark:text-orange-400">Category</span>
+            </h2>
           </div>
-        </div>
-        <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-          {roots.map((cat) => (
-            <CategoryTile
-              key={cat.slug}
-              slug={cat.slug}
-              name={cat.name}
-              icon={ROOT_TYPE_ICONS[cat.rootType] || 'FileText'}
-              description={cat.description || undefined}
-            />
-          ))}
+          <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {roots.map((cat) => (
+              <CategoryTile
+                key={cat.slug}
+                slug={cat.slug}
+                name={cat.name}
+                icon={ROOT_TYPE_ICONS[cat.rootType] || 'FileText'}
+                description={cat.description || undefined}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Latest Uploads */}
-      <section className="border-t border-border bg-muted/30 py-14">
+      <section className="bg-white dark:bg-background py-20">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">Latest Uploads</h2>
-              <p className="mt-1.5 text-sm text-muted-foreground">Recently added documents</p>
-            </div>
-            <Button variant="outline" size="sm" className="hidden sm:flex" render={<Link href="/search" />}>
+          <div className="mb-12 text-center sm:text-left flex items-center justify-between">
+            <h2 className="text-3xl font-extrabold text-foreground">
+              New <span className="text-orange-500 dark:text-orange-400">Arrivals</span>
+            </h2>
+            <Button variant="outline" size="sm" className="hidden sm:flex rounded-full border-2 hover:bg-slate-50" render={<Link href="/search" />}>
                 View all
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="ml-1">
                   <path d="M2 6H10M7 3L10 6L7 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -92,25 +79,28 @@ export default async function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative overflow-hidden border-t border-border py-16">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute left-1/4 top-1/2 h-40 w-40 -translate-y-1/2 rounded-full bg-primary/10 blur-[80px]" />
-          <div className="absolute right-1/4 top-1/2 h-40 w-40 -translate-y-1/2 rounded-full bg-chart-2/10 blur-[60px]" />
-        </div>
-        <div className="relative mx-auto max-w-2xl px-4 text-center">
-          <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
-            Ready to start learning?
+      <section className="relative overflow-hidden py-32 px-4 lg:px-6 bg-slate-50 dark:bg-slate-900/20 border-t border-border/50">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-teal-500/10 via-transparent to-transparent pointer-events-none"></div>
+        <div className="relative mx-auto max-w-3xl text-center">
+          <h2 className="text-4xl font-black text-slate-800 dark:text-slate-100 sm:text-5xl md:text-6xl tracking-tight">
+            Ready to start <span className="text-teal-600">learning?</span>
           </h2>
-          <p className="mt-3 text-muted-foreground">
+          <p className="mt-6 text-slate-500 dark:text-slate-400 max-w-xl mx-auto text-lg font-medium leading-relaxed">
             Register via your mobile and get unlimited access to download all documents.
           </p>
-          <div className="mt-6 flex justify-center gap-3">
-            <Button size="lg" render={<Link href="/login" />}>
-              Get Started
-            </Button>
-            <Button variant="outline" size="lg" render={<Link href="/category/past-papers" />}>
+          <div className="mt-12 flex flex-col sm:flex-row justify-center gap-4">
+            <Link 
+              href="/login"
+              className="inline-flex h-14 items-center justify-center rounded-full bg-teal-600 px-10 text-base font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-teal-700 hover:shadow-teal-500/25 focus:outline-none focus:ring-4 focus:ring-teal-500/20"
+            >
+              Get Started Now
+            </Link>
+            <Link 
+              href="/category/past-papers"
+              className="inline-flex h-14 items-center justify-center rounded-full border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-10 text-base font-bold text-slate-600 dark:text-slate-300 transition-all hover:border-teal-600 hover:text-teal-600 focus:outline-none focus:ring-4 focus:ring-slate-500/20"
+            >
               Browse Papers
-            </Button>
+            </Link>
           </div>
         </div>
       </section>
