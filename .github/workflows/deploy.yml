@@ -32,7 +32,7 @@ jobs:
 
       - name: Package build
         run: |
-          tar -czf build.tar.gz .next package.json package-lock.json ecosystem.config.cjs .env.local
+          tar -czf build.tar.gz .next public package.json package-lock.json ecosystem.config.cjs .env.local
 
       - name: Install sshpass
         run: |
