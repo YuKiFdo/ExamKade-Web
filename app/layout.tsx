@@ -6,6 +6,8 @@ import { Footer } from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 import { api } from "@/lib/api";
+import { Toaster } from "sonner";
+import { ConfirmProvider } from "@/components/providers/ConfirmProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -59,9 +61,12 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header initialRoots={roots} />
-          <main className="flex-1">{children}</main>
-          <Footer initialRoots={roots} />
+          <ConfirmProvider>
+            <Header initialRoots={roots} />
+            <main className="flex-1">{children}</main>
+            <Footer initialRoots={roots} />
+          </ConfirmProvider>
+          <Toaster position="top-center" richColors />
         </ThemeProvider>
       </body>
     </html>

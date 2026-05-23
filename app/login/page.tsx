@@ -11,6 +11,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp
 import { motion, AnimatePresence } from 'framer-motion';
 import { requestOtpAction, verifyOtpAction } from '@/app/actions/auth';
 import { getLoginWarningAction } from '@/app/actions/settings';
+import { toast } from 'sonner';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -20,7 +21,6 @@ export default function LoginPage() {
   const [referenceNo, setReferenceNo] = useState('');
   const [otp, setOtp] = useState('');
   const [devMode, setDevMode] = useState(false);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showServiceFee, setShowServiceFee] = useState(false);
 
@@ -30,15 +30,15 @@ export default function LoginPage() {
 
   const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
     try {
       const res = await requestOtpAction(mobile);
       setReferenceNo(res.referenceNo);
       setDevMode(!!res.devMode);
       setStep('otp');
+      toast.success(`OTP sent to ${mobile}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send OTP');
+      toast.error(err instanceof Error ? err.message : 'Failed to send OTP');
     } finally {
       setLoading(false);
     }
@@ -46,14 +46,14 @@ export default function LoginPage() {
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
     try {
       await verifyOtpAction(referenceNo, otp, name);
+      toast.success('Successfully logged in!');
       router.push('/account');
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Invalid OTP');
+      toast.error(err instanceof Error ? err.message : 'Invalid OTP');
     } finally {
       setLoading(false);
     }
@@ -122,8 +122,6 @@ export default function LoginPage() {
                   />
                 </div>
                 
-                {error && <p className="text-sm font-bold text-red-500">{error}</p>}
-                
                 <Button type="submit" className="w-full rounded-full h-12 font-bold bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-500/20 text-[15px]" disabled={loading}>
                   {loading ? 'Sending…' : 'Send OTP'}
                 </Button>
@@ -163,8 +161,6 @@ export default function LoginPage() {
                     </InputOTP>
                   </div>
                 </div>
-
-                {error && <p className="text-sm font-bold text-red-500">{error}</p>}
                 
                 <div className="space-y-3 pt-3">
                   <Button type="submit" className="w-full rounded-full h-12 font-bold bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-500/20 text-[15px]" disabled={loading}>
@@ -184,9 +180,9 @@ export default function LoginPage() {
           </AnimatePresence>
         </CardContent>
         <CardFooter className="flex justify-center border-t border-slate-100 dark:border-slate-800 pt-6 pb-6">
-          <Button variant="link" render={<Link href="/" />} className="text-slate-500 hover:text-teal-600 font-bold">
+          <Link href="/" className="text-sm text-slate-500 hover:text-teal-600 font-bold hover:underline">
             Continue browsing without signing in
-          </Button>
+          </Link>
         </CardFooter>
       </Card>
     </div>
