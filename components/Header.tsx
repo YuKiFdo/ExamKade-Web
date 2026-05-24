@@ -27,7 +27,7 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
 
   useEffect(() => {
     if (!initialRoots || initialRoots.length === 0) {
-      api.getRoots().then(setRoots).catch(() => {});
+      api.getRoots().then(setRoots).catch(() => { });
     }
   }, [initialRoots]);
 
@@ -91,7 +91,7 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
             <Link href="/" className="text-[15px] font-bold text-foreground transition-colors hover:text-indigo-600">
               Home
             </Link>
-            
+
             <div
               className="relative group"
               onMouseEnter={() => setMegaOpen(true)}
@@ -99,9 +99,8 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
             >
               <button
                 type="button"
-                className={`flex items-center gap-1.5 text-[15px] font-bold transition-colors hover:text-indigo-600 ${
-                  megaOpen ? 'text-indigo-600' : 'text-foreground'
-                }`}
+                className={`flex items-center gap-1.5 text-[15px] font-bold transition-colors hover:text-indigo-600 ${megaOpen ? 'text-indigo-600' : 'text-foreground'
+                  }`}
               >
                 Categories
                 <svg
@@ -111,7 +110,7 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                   fill="none"
                   className={`transition-transform duration-200 ${megaOpen ? 'rotate-180 text-indigo-600' : 'text-foreground/50'}`}
                 >
-                  <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
 
@@ -137,11 +136,10 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                                   key={item.slug}
                                   href={`/category/${item.slug}`}
                                   onClick={() => setMegaOpen(false)}
-                                  className={`group flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${
-                                    pathname?.includes(item.slug)
+                                  className={`group flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${pathname?.includes(item.slug)
                                       ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20'
                                       : 'text-slate-600 dark:text-slate-300'
-                                  }`}
+                                    }`}
                                 >
                                   <span className={`flex size-5 shrink-0 items-center justify-center transition-colors ${pathname?.includes(item.slug) ? 'text-indigo-500' : 'text-slate-300 dark:text-slate-600 group-hover:text-indigo-500'}`}>
                                     {(() => {
@@ -169,9 +167,8 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                 <Link
                   key={item.slug}
                   href={`/category/${item.slug}`}
-                  className={`text-[15px] font-bold transition-colors whitespace-nowrap ${
-                    pathname?.includes(item.slug) ? 'text-indigo-600' : 'text-foreground hover:text-indigo-600'
-                  }`}
+                  className={`text-[15px] font-bold transition-colors whitespace-nowrap ${pathname?.includes(item.slug) ? 'text-indigo-600' : 'text-foreground hover:text-indigo-600'
+                    }`}
                 >
                   {item.name}
                 </Link>
@@ -183,7 +180,7 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
             <div className="hidden sm:block">
               <ThemeToggle />
             </div>
-            
+
             {user ? (
               <div className="flex items-center gap-3">
                 <span className="hidden text-sm font-bold sm:inline max-w-[120px] truncate text-foreground">
@@ -208,7 +205,7 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                       }
                     />
                     <DropdownMenuSeparator className="bg-border/50 my-1" />
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 cursor-pointer"
                       onClick={async () => {
                         await logoutAction();
@@ -238,11 +235,11 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
             >
               {mobileOpen ? (
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               ) : (
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M4 7H20M4 12H20M4 17H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M4 7H20M4 12H20M4 17H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               )}
             </Button>
@@ -270,9 +267,6 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
             >
               <div className="flex items-center justify-between border-b border-border/50 p-5">
                 <div className="flex items-center gap-2 font-bold tracking-tight group">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-md">
-                    <FileText className="size-4" />
-                  </span>
                   <span className="text-lg">
                     <span className="text-foreground">Exam</span>
                     <span className="text-indigo-600">Kade</span>
@@ -280,7 +274,7 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                 </div>
                 <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setMobileOpen(false)}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 </Button>
               </div>
@@ -295,11 +289,10 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                         <Link
                           key={item.slug}
                           href={`/category/${item.slug}`}
-                          className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${
-                            pathname?.includes(item.slug)
+                          className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${pathname?.includes(item.slug)
                               ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20'
                               : 'text-foreground'
-                          }`}
+                            }`}
                           onClick={() => setMobileOpen(false)}
                         >
                           <span className="flex size-5 shrink-0 items-center justify-center text-indigo-600/70">
@@ -325,9 +318,9 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                     <Button variant="outline" className="w-full rounded-full border-2 font-bold hover:bg-slate-50 dark:hover:bg-slate-800" render={<Link href="/account" onClick={() => setMobileOpen(false)} />}>
                       My Account
                     </Button>
-                    <Button 
-                      variant="destructive" 
-                      className="w-full rounded-full font-bold bg-red-600 hover:bg-red-700" 
+                    <Button
+                      variant="destructive"
+                      className="w-full rounded-full font-bold bg-red-600 hover:bg-red-700"
                       onClick={async () => {
                         await logoutAction();
                         setUser(null);
