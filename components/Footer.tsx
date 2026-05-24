@@ -30,9 +30,6 @@ export function Footer({ initialRoots }: { initialRoots?: any[] }) {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link href="/" className="inline-flex items-center gap-2 font-bold tracking-tight group">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-md transition-transform group-hover:scale-105">
-                <FileText className="size-5" />
-              </span>
               <span className="text-xl">
                 <span className="text-foreground">Exam</span>
                 <span className="text-indigo-600">Kade</span>

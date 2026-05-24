@@ -36,7 +36,7 @@ export default async function HomePage() {
           </div>
 
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl text-slate-900 dark:text-white">
-            Access Curriculum-Aligned <br className="hidden sm:inline" />
+            Access Curriculum Aligned <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent dark:from-indigo-400 dark:to-blue-400">
               Study & Exam Resources
             </span>
