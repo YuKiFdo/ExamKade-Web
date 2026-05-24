@@ -83,10 +83,10 @@ export function PdfViewer({ url }: { url: string }) {
               key={i} 
               className="flex w-[150%] -translate-x-1/4 -rotate-12 items-center justify-around gap-12 whitespace-nowrap text-5xl font-extrabold uppercase tracking-widest text-slate-500 dark:text-slate-400 py-12"
             >
-              <span>Doc.lk</span>
-              <span>Doc.lk</span>
-              <span>Doc.lk</span>
-              <span>Doc.lk</span>
+              <span>examkade.com</span>
+              <span>examkade.com</span>
+              <span>examkade.com</span>
+              <span>examkade.com</span>
             </div>
           ))}
         </div>

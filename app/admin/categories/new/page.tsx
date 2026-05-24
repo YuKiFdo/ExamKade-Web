@@ -24,6 +24,16 @@ const ROOT_TYPES = [
   { value: 'GAZETTE', label: 'Government Gazette' },
 ];
 
+const DEFAULT_ROOT_FILTERS: Record<string, string[]> = {
+  PAST_PAPERS: ['EXAM', 'SUBJECT', 'YEAR', 'MEDIUM'],
+  MODEL_PAPERS: ['EXAM', 'SUBJECT', 'YEAR', 'MEDIUM'],
+  TERM_TEST: ['GRADE', 'SUBJECT', 'YEAR', 'TERM', 'PROVINCE'],
+  SYLLABUS: ['GRADE', 'SUBJECT', 'MEDIUM'],
+  TEACHERS_GUIDE: ['GRADE', 'SUBJECT', 'MEDIUM'],
+  TEXT_BOOKS: ['GRADE', 'SUBJECT', 'MEDIUM'],
+  GAZETTE: [],
+};
+
 function slugify(str: string) {
   return str
     .toLowerCase()
@@ -52,6 +62,14 @@ export default function NewCategoryPage() {
       setSlug(slugify(name));
     }
   }, [name, autoSlug]);
+
+  useEffect(() => {
+    if (rootType) {
+      setAllowedFilters(DEFAULT_ROOT_FILTERS[rootType] || []);
+    } else {
+      setAllowedFilters([]);
+    }
+  }, [rootType]);
 
   // Filter parent options by selected rootType (only root-level categories)
   const parentOptions = categories.filter(

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ROOT_TYPE_ICONS } from '@/lib/api';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import * as LucideIcons from 'lucide-react';
 import { FileText } from 'lucide-react';
 
 export function Footer({ initialRoots }: { initialRoots?: any[] }) {
@@ -28,13 +29,13 @@ export function Footer({ initialRoots }: { initialRoots?: any[] }) {
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link href="/" className="inline-flex items-center gap-2 font-black tracking-tight group">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-600 text-white shadow-md transition-transform group-hover:scale-105">
+            <Link href="/" className="inline-flex items-center gap-2 font-bold tracking-tight group">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-md transition-transform group-hover:scale-105">
                 <FileText className="size-5" />
               </span>
               <span className="text-xl">
                 <span className="text-foreground">Exam</span>
-                <span className="text-teal-600">Kade</span>
+                <span className="text-indigo-600">Kade</span>
               </span>
             </Link>
             <p className="mt-6 max-w-md text-sm font-medium leading-relaxed text-slate-500 dark:text-slate-400">
@@ -55,11 +56,11 @@ export function Footer({ initialRoots }: { initialRoots?: any[] }) {
                   <li key={item.slug}>
                     <Link
                       href={`/category/${item.slug}`}
-                      className="group flex items-center gap-3 text-sm font-semibold text-slate-600 dark:text-slate-300 transition-colors hover:text-teal-600 dark:hover:text-teal-400"
+                      className="group flex items-center gap-3 text-sm font-semibold text-slate-600 dark:text-slate-300 transition-colors hover:text-indigo-600 dark:hover:text-indigo-400"
                     >
-                      <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-teal-50 dark:group-hover:bg-teal-900/30 group-hover:text-teal-600 transition-all">
+                      <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30 group-hover:text-indigo-600 transition-all">
                         {(() => {
-                          const Icon = (require('lucide-react') as any)[item.icon];
+                          const Icon = (LucideIcons as any)[item.icon];
                           return Icon ? <Icon className="size-3.5" /> : null;
                         })()}
                       </span>

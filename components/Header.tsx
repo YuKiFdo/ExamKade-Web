@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import * as LucideIcons from 'lucide-react';
 import { User, LogOut, Settings, FileText } from 'lucide-react';
 
 export function Header({ initialRoots }: { initialRoots?: any[] }) {
@@ -77,20 +78,17 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 lg:px-6">
           {/* Left: Logo */}
           <div className="flex lg:w-[250px] items-center justify-start shrink-0">
-            <Link href="/" className="inline-flex items-center gap-2 font-black tracking-tight group">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-600 text-white shadow-md transition-transform group-hover:scale-105">
-                <FileText className="size-5" />
-              </span>
+            <Link href="/" className="inline-flex items-center gap-2 font-bold tracking-tight group">
               <span className="text-xl">
                 <span className="text-foreground">Exam</span>
-                <span className="text-teal-600">Kade</span>
+                <span className="text-indigo-600">Kade</span>
               </span>
             </Link>
           </div>
 
           {/* Center: Desktop nav */}
           <nav className="hidden lg:flex flex-1 justify-center items-center gap-6 xl:gap-8">
-            <Link href="/" className="text-[15px] font-bold text-foreground transition-colors hover:text-teal-600">
+            <Link href="/" className="text-[15px] font-bold text-foreground transition-colors hover:text-indigo-600">
               Home
             </Link>
             
@@ -101,8 +99,8 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
             >
               <button
                 type="button"
-                className={`flex items-center gap-1.5 text-[15px] font-bold transition-colors hover:text-teal-600 ${
-                  megaOpen ? 'text-teal-600' : 'text-foreground'
+                className={`flex items-center gap-1.5 text-[15px] font-bold transition-colors hover:text-indigo-600 ${
+                  megaOpen ? 'text-indigo-600' : 'text-foreground'
                 }`}
               >
                 Categories
@@ -111,7 +109,7 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                   height="12"
                   viewBox="0 0 12 12"
                   fill="none"
-                  className={`transition-transform duration-200 ${megaOpen ? 'rotate-180 text-teal-600' : 'text-foreground/50'}`}
+                  className={`transition-transform duration-200 ${megaOpen ? 'rotate-180 text-indigo-600' : 'text-foreground/50'}`}
                 >
                   <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
@@ -141,13 +139,13 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                                   onClick={() => setMegaOpen(false)}
                                   className={`group flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${
                                     pathname?.includes(item.slug)
-                                      ? 'text-teal-600 bg-teal-50 dark:bg-teal-900/20'
+                                      ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20'
                                       : 'text-slate-600 dark:text-slate-300'
                                   }`}
                                 >
-                                  <span className={`flex size-5 shrink-0 items-center justify-center transition-colors ${pathname?.includes(item.slug) ? 'text-teal-500' : 'text-slate-300 dark:text-slate-600 group-hover:text-teal-500'}`}>
+                                  <span className={`flex size-5 shrink-0 items-center justify-center transition-colors ${pathname?.includes(item.slug) ? 'text-indigo-500' : 'text-slate-300 dark:text-slate-600 group-hover:text-indigo-500'}`}>
                                     {(() => {
-                                      const Icon = (require('lucide-react') as any)[item.icon];
+                                      const Icon = (LucideIcons as any)[item.icon];
                                       return Icon ? <Icon className="size-4" strokeWidth={2.5} /> : null;
                                     })()}
                                   </span>
@@ -172,7 +170,7 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                   key={item.slug}
                   href={`/category/${item.slug}`}
                   className={`text-[15px] font-bold transition-colors whitespace-nowrap ${
-                    pathname?.includes(item.slug) ? 'text-teal-600' : 'text-foreground hover:text-teal-600'
+                    pathname?.includes(item.slug) ? 'text-indigo-600' : 'text-foreground hover:text-indigo-600'
                   }`}
                 >
                   {item.name}
@@ -271,13 +269,13 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
               className="fixed right-0 top-0 z-50 flex h-full w-80 max-w-[85vw] flex-col bg-white dark:bg-slate-900 border-l border-border/50 overflow-y-auto shadow-2xl"
             >
               <div className="flex items-center justify-between border-b border-border/50 p-5">
-                <div className="flex items-center gap-2 font-black tracking-tight group">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-600 text-white shadow-md">
+                <div className="flex items-center gap-2 font-bold tracking-tight group">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-md">
                     <FileText className="size-4" />
                   </span>
                   <span className="text-lg">
                     <span className="text-foreground">Exam</span>
-                    <span className="text-teal-600">Kade</span>
+                    <span className="text-indigo-600">Kade</span>
                   </span>
                 </div>
                 <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setMobileOpen(false)}>
@@ -299,14 +297,14 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                           href={`/category/${item.slug}`}
                           className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${
                             pathname?.includes(item.slug)
-                              ? 'text-teal-600 bg-teal-50 dark:bg-teal-900/20'
+                              ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20'
                               : 'text-foreground'
                           }`}
                           onClick={() => setMobileOpen(false)}
                         >
-                          <span className="flex size-5 shrink-0 items-center justify-center text-teal-600/70">
+                          <span className="flex size-5 shrink-0 items-center justify-center text-indigo-600/70">
                             {(() => {
-                              const Icon = (require('lucide-react') as any)[item.icon];
+                              const Icon = (LucideIcons as any)[item.icon];
                               return Icon ? <Icon className="size-4" /> : null;
                             })()}
                           </span>
@@ -342,7 +340,7 @@ export function Header({ initialRoots }: { initialRoots?: any[] }) {
                     </Button>
                   </div>
                 ) : (
-                  <Button className="w-full rounded-full font-bold bg-teal-600 hover:bg-teal-700 text-white" render={<Link href="/login" onClick={() => setMobileOpen(false)} />}>
+                  <Button className="w-full rounded-full font-bold bg-indigo-600 hover:bg-indigo-700 text-white" render={<Link href="/login" onClick={() => setMobileOpen(false)} />}>
                     Login
                   </Button>
                 )}

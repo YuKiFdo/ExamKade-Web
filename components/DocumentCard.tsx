@@ -18,23 +18,23 @@ export function DocumentCard({ doc }: { doc: Document }) {
         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
         className="h-full"
       >
-        <Card className="relative h-full flex flex-col overflow-hidden bg-white dark:bg-card border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:border-teal-500/30 transition-all duration-300 rounded-2xl p-6">
+        <Card className="relative h-full flex flex-col overflow-hidden bg-white dark:bg-card border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:border-indigo-500/30 transition-all duration-300 rounded-2xl p-6">
           
           <div className="flex items-start justify-between mb-4">
             {/* Category badge */}
             {doc.category && (
-              <Badge variant="secondary" className="bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 font-bold border-none px-3 py-1 text-xs">
+              <Badge variant="secondary" className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-bold border-none px-3 py-1 text-xs">
                 {doc.category.name}
               </Badge>
             )}
             
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 text-slate-400 group-hover:bg-teal-500 group-hover:text-white transition-colors duration-300">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 text-slate-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
               <FileText className="size-4" />
             </div>
           </div>
 
           {/* Title */}
-          <h3 className="text-base font-bold leading-snug text-slate-800 dark:text-slate-100 transition-colors group-hover:text-teal-600 line-clamp-2 mb-2">
+          <h3 className="text-base font-bold leading-snug text-slate-800 dark:text-slate-100 transition-colors group-hover:text-indigo-600 line-clamp-2 mb-2">
             {doc.title}
           </h3>
 
@@ -56,7 +56,7 @@ export function DocumentCard({ doc }: { doc: Document }) {
                 ))}
               </div>
             )}
-            <div className="ml-auto flex items-center gap-1 text-xs text-teal-600 font-bold opacity-0 transition-all duration-300 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0">
+            <div className="ml-auto flex items-center gap-1 text-xs text-indigo-600 font-bold opacity-0 transition-all duration-300 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0">
               <span>View</span>
               <svg
                 width="14"

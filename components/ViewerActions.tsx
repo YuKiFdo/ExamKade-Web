@@ -52,7 +52,7 @@ export function ViewerActions({
     <div className="flex items-center gap-3">
       {/* Download Action */}
       {active ? (
-        <Button size="sm" className="rounded-full !bg-teal-600 hover:!bg-teal-700 !text-white font-bold shadow-md shadow-teal-500/20 px-4" render={<a href={api.downloadUrl(fileId)} download={fileName} />}>
+        <Button size="sm" className="rounded-full !bg-indigo-600 hover:!bg-indigo-700 !text-white font-bold shadow-md shadow-indigo-500/20 px-4" render={<a href={api.downloadUrl(fileId)} download={fileName} />}>
           <Download className="mr-1.5 size-4" />
           Download PDF
         </Button>
@@ -60,7 +60,7 @@ export function ViewerActions({
         <Button
           variant="outline"
           size="sm"
-          className="rounded-full border-orange-200 !bg-orange-50 !text-orange-700 hover:!bg-orange-100 hover:!text-orange-800 dark:border-orange-900/40 dark:!bg-orange-950/30 dark:!text-orange-400 dark:hover:!bg-orange-900/50 shadow-sm font-bold px-4"
+          className="rounded-full border-indigo-150/80 !bg-indigo-50/30 !text-indigo-600 hover:!bg-indigo-50/60 hover:!text-indigo-700 dark:border-indigo-900/30 dark:!bg-indigo-950/20 dark:!text-indigo-400 dark:hover:!bg-indigo-900/30 shadow-sm font-bold px-4"
           render={<Link href={user ? "/account" : "/login"} />}
         >
           <Lock className="mr-1.5 size-3.5 opacity-80" />

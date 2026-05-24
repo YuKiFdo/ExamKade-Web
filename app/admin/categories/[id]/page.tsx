@@ -7,6 +7,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 
+const DEFAULT_ROOT_FILTERS: Record<string, string[]> = {
+  PAST_PAPERS: ['EXAM', 'SUBJECT', 'YEAR', 'MEDIUM'],
+  MODEL_PAPERS: ['EXAM', 'SUBJECT', 'YEAR', 'MEDIUM'],
+  TERM_TEST: ['GRADE', 'SUBJECT', 'YEAR', 'TERM', 'PROVINCE'],
+  SYLLABUS: ['GRADE', 'SUBJECT', 'MEDIUM'],
+  TEACHERS_GUIDE: ['GRADE', 'SUBJECT', 'MEDIUM'],
+  TEXT_BOOKS: ['GRADE', 'SUBJECT', 'MEDIUM'],
+  GAZETTE: [],
+};
+
 export default function EditCategoryPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -21,14 +31,19 @@ export default function EditCategoryPage() {
     adminApi
       .categories()
       .then((cats) => {
-        const cat = (cats as { id: string; name: string; slug: string; sortOrder?: number; allowedFilters?: string[] }[]).find(
+        const cat = (cats as { id: string; name: string; rootType: string; slug: string; sortOrder?: number; allowedFilters?: string[] }[]).find(
           (c) => c.id === id
         );
         if (cat) {
           setName(cat.name);
           setSlug(cat.slug);
           setSortOrder(String(cat.sortOrder || 0));
-          setAllowedFilters(cat.allowedFilters || []);
+          
+          // Pre-populate with default filters if allowedFilters is empty
+          const filters = cat.allowedFilters && cat.allowedFilters.length > 0
+            ? cat.allowedFilters
+            : DEFAULT_ROOT_FILTERS[cat.rootType] || [];
+          setAllowedFilters(filters);
         }
         setLoading(false);
       })

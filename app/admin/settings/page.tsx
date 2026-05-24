@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { adminApi } from '@/lib/admin-api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
 
 export default function AdminSettingsPage() {
   const router = useRouter();
@@ -26,8 +27,9 @@ export default function AdminSettingsPage() {
       const newValue = !showWarning;
       await adminApi.toggleLoginWarning(newValue);
       setShowWarning(newValue);
+      toast.success('Setting updated successfully');
     } catch {
-      alert('Failed to update setting');
+      toast.error('Failed to update setting');
     } finally {
       setSaving(false);
     }

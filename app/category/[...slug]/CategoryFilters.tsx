@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card';
 
 const FACET_LABELS: Record<string, string> = {
   EXAM: 'Exam',
@@ -61,15 +60,15 @@ export function CategoryFilters({
   if (facetOptions.length === 0) return null;
 
   return (
-    <Card>
-      <CardContent className="flex flex-wrap gap-3 p-4">
+    <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 p-5 shadow-sm">
+      <div className="flex flex-wrap gap-4">
         {facetOptions.map(({ key, options }) => {
           const param = FACET_PARAM[key];
           const activeValue = param ? searchParams.get(param) || 'ALL' : 'ALL';
           
           return (
             <div key={key} className="min-w-[140px] flex-1">
-              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
+              <label className="mb-2 block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 {FACET_LABELS[key] || key}
               </label>
               <Select
@@ -78,13 +77,13 @@ export function CategoryFilters({
                   if (val) handleFilter(key, val);
                 }}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full h-10 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 rounded-xl font-medium text-sm">
                   <SelectValue placeholder="All" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All</SelectItem>
+                <SelectContent className="rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                  <SelectItem value="ALL" className="rounded-lg">All</SelectItem>
                   {options.map((o) => (
-                    <SelectItem key={o.id} value={o.slug}>
+                    <SelectItem key={o.id} value={o.slug} className="rounded-lg">
                       {o.label}
                     </SelectItem>
                   ))}
@@ -93,7 +92,7 @@ export function CategoryFilters({
             </div>
           );
         })}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

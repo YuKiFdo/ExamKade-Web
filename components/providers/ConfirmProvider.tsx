@@ -11,6 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/utils";
 
 type ConfirmOptions = {
   title: string;
@@ -53,20 +54,30 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
     <ConfirmContext.Provider value={{ confirm }}>
       {children}
       <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="rounded-2xl max-w-sm sm:max-w-md border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl p-6">
           <AlertDialogHeader>
-            <AlertDialogTitle>{options?.title}</AlertDialogTitle>
+            <AlertDialogTitle className="text-lg font-bold text-slate-900 dark:text-white">{options?.title}</AlertDialogTitle>
             {options?.description && (
-              <AlertDialogDescription>{options.description}</AlertDialogDescription>
+              <AlertDialogDescription className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                {options.description}
+              </AlertDialogDescription>
             )}
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancel}>
+          <AlertDialogFooter className="mt-6 gap-2">
+            <AlertDialogCancel 
+              onClick={handleCancel}
+              className="rounded-xl border-slate-200 dark:border-slate-800 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 text-sm h-10 px-4"
+            >
               {options?.cancelText || "Cancel"}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirm}
-              className={options?.variant === "destructive" ? "bg-red-600 hover:bg-red-700 text-white" : ""}
+              className={cn(
+                "rounded-xl font-bold text-sm shadow-sm h-10 px-4 transition-colors",
+                options?.variant === "destructive"
+                  ? "bg-red-600 hover:bg-red-700 text-white"
+                  : "bg-indigo-600 hover:bg-indigo-700 text-white"
+              )}
             >
               {options?.confirmText || "Confirm"}
             </AlertDialogAction>

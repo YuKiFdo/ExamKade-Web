@@ -1,11 +1,13 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { FileText } from 'lucide-react';
+import { adminApi } from '@/lib/admin-api';
 
 const NAV_ITEMS = [
   {
@@ -89,10 +91,40 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (pathname === '/admin/login') {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    adminApi
+      .getLoginWarning()
+      .then(() => {
+        setLoading(false);
+      })
+      .catch(() => {
+        router.push('/admin/login');
+      });
+  }, [pathname, router]);
 
   // Don't show sidebar on login page
   if (pathname === '/admin/login') {
     return <>{children}</>;
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />
+          <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">Verifying session…</div>
+        </div>
+      </div>
+    );
   }
 
   return (
