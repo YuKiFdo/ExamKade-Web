@@ -93,8 +93,16 @@ export const api = {
       { method: 'POST', body: JSON.stringify({ referenceNo, otp, name }) },
     ),
   logout: () => fetchApi('/auth/logout', { method: 'POST' }),
-  previewUrl: (fileId: string) => `${API_URL}/files/${fileId}/preview`,
-  downloadUrl: (fileId: string) => `${API_URL}/files/${fileId}/download`,
+  getFileToken: (fileId: string) =>
+    fetchApi<{ token: string; expiresAt: number }>(`/files/${fileId}/token`),
+  previewUrl: async (fileId: string) => {
+    const { token } = await api.getFileToken(fileId);
+    return `${API_URL}/files/${fileId}/preview?token=${token}`;
+  },
+  downloadUrl: async (fileId: string) => {
+    const { token } = await api.getFileToken(fileId);
+    return `${API_URL}/files/${fileId}/download?token=${token}`;
+  },
 };
 
 export const ROOT_NAV = [

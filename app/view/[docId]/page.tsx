@@ -35,7 +35,7 @@ export default async function ViewPage({ params, searchParams }: Props) {
     );
   }
 
-  const previewUrl = api.previewUrl(fileId);
+  const previewUrl = await api.previewUrl(fileId);
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col bg-slate-50/30 dark:bg-zinc-950/20">
