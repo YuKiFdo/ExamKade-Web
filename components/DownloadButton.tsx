@@ -15,6 +15,7 @@ export function DownloadButton({
 }) {
   const [canDownload, setCanDownload] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [downloadHref, setDownloadHref] = useState<string | null>(null);
 
   useEffect(() => {
     getMeAction()
@@ -22,6 +23,12 @@ export function DownloadButton({
       .catch(() => setCanDownload(false))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (canDownload) {
+      api.downloadUrl(fileId).then(setDownloadHref).catch(() => {});
+    }
+  }, [canDownload, fileId]);
 
   if (loading) {
     return (
@@ -48,13 +55,18 @@ export function DownloadButton({
   }
 
   return (
-    <Button className="rounded-full !bg-indigo-600 hover:!bg-indigo-700 !text-white font-bold shadow-md shadow-indigo-500/20" render={<a href={api.downloadUrl(fileId)} download={fileName} />}>
+    <Button
+      className="rounded-full !bg-indigo-600 hover:!bg-indigo-700 !text-white font-bold shadow-md shadow-indigo-500/20"
+      disabled={!downloadHref}
+      render={downloadHref ? <a href={downloadHref} download={fileName} /> : undefined}
+    >
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
         <polyline points="7 10 12 15 17 10"/>
         <line x1="12" x2="12" y1="15" y2="3"/>
       </svg>
-      Download PDF
+      {downloadHref ? 'Download PDF' : 'Preparing…'}
     </Button>
   );
 }
+
