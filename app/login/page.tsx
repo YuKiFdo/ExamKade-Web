@@ -12,6 +12,7 @@ import { requestOtpAction, verifyOtpAction } from '@/app/actions/auth';
 import { getLoginWarningAction } from '@/app/actions/settings';
 import { toast } from 'sonner';
 import { ShieldCheck, BookOpen, CheckCircle2, ChevronRight } from 'lucide-react';
+import { useConfirm } from '@/components/providers/ConfirmProvider';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -28,12 +29,24 @@ export default function LoginPage() {
     getLoginWarningAction().then((res) => setShowServiceFee(res.showWarning));
   }, []);
 
+  const { confirm } = useConfirm();
+
   const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!mobile.startsWith('07') || mobile.length !== 10) {
       toast.error('Invalid mobile number. It must start with 07 and be exactly 10 digits.');
       return;
     }
+
+    if (showServiceFee) {
+      const ok = await confirm({
+        title: 'Service Fee Notice',
+        description: 'A daily service fee of Rs.3 will be applicable. Do you want to proceed?',
+        confirmText: 'Accept & Continue',
+      });
+      if (!ok) return;
+    }
+
     setLoading(true);
     try {
       const res = await requestOtpAction(mobile);
@@ -135,16 +148,6 @@ export default function LoginPage() {
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
                 Enter your mobile number to sign in and download academic materials. Previewing documents is free.
               </p>
-              {showServiceFee && (
-                <div className="mx-auto mt-4 inline-flex items-center gap-2 rounded-lg bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100/80 dark:border-indigo-900/40 px-4 py-1.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600 dark:text-indigo-400 shrink-0">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 16v-4"/>
-                    <path d="M12 8h.01"/>
-                  </svg>
-                  <span className="text-xs font-semibold text-indigo-700 dark:text-indigo-300">Rs.3 daily service fee applicable</span>
-                </div>
-              )}
             </div>
             
             <div className="overflow-hidden p-1">

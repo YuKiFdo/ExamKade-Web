@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/web';
 
 async function adminFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}/admin${path}`, {
@@ -30,17 +30,18 @@ export const adminApi = {
       downloads: number;
       todayDownloads: number;
     }>('/dashboard'),
-  users: () =>
+  users: (source?: string) =>
     adminFetch<
       {
         id: string;
         mobile: string;
         operator: string;
         subscriptionStatus: string;
+        registrationSource: string;
         subscribedAt?: string;
         _count?: { downloadLogs: number };
       }[]
-    >('/users'),
+    >(`/users${source && source !== 'ALL' ? `?source=${source}` : ''}`),
   downloads: () =>
     adminFetch<
       {

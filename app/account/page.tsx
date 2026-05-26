@@ -127,7 +127,7 @@ export default function AccountPage() {
                       try {
                         await unsubscribeAction();
                         toast.success('Unsubscribed successfully');
-                        getMeAction().then(setUser);
+                        await logout();
                       } catch (err) {
                         toast.error(err instanceof Error ? err.message : 'Failed to unsubscribe');
                       }

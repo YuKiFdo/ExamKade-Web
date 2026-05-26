@@ -31,7 +31,7 @@ export async function verifyOtpAction(referenceNo: string, otp: string, name?: s
   const res = await fetch(`${API_URL}/auth/otp/verify`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ referenceNo, otp, name }),
+    body: JSON.stringify({ referenceNo, otp, name, source: 'WEB' }),
   });
 
   if (!res.ok) {

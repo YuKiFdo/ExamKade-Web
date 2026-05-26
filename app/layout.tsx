@@ -57,7 +57,7 @@ export default async function RootLayout({
       <body className="flex min-h-full flex-col antialiased font-sans">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
