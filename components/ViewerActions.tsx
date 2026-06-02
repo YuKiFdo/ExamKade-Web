@@ -21,6 +21,7 @@ export function ViewerActions({
     subscriptionStatus: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [downloadHref, setDownloadHref] = useState<string | null>(null);
 
   useEffect(() => {
     getMeAction()
@@ -28,6 +29,14 @@ export function ViewerActions({
       .catch(() => setUser(null))
       .finally(() => setLoading(false));
   }, []);
+
+  const active = user?.subscriptionStatus === 'ACTIVE';
+
+  useEffect(() => {
+    if (active) {
+      api.downloadUrl(fileId).then(setDownloadHref).catch(() => {});
+    }
+  }, [active, fileId]);
 
 
   const handleLogout = async () => {
@@ -46,15 +55,18 @@ export function ViewerActions({
     );
   }
 
-  const active = user?.subscriptionStatus === 'ACTIVE';
-
   return (
     <div className="flex items-center gap-3">
       {/* Download Action */}
       {active ? (
-        <Button size="sm" className="rounded-full !bg-indigo-600 hover:!bg-indigo-700 !text-white font-bold shadow-md shadow-indigo-500/20 px-4" render={<a href={api.downloadUrl(fileId)} download={fileName} />}>
+        <Button
+          size="sm"
+          className="rounded-full !bg-indigo-600 hover:!bg-indigo-700 !text-white font-bold shadow-md shadow-indigo-500/20 px-4"
+          disabled={!downloadHref}
+          render={downloadHref ? <a href={downloadHref} download={fileName} /> : undefined}
+        >
           <Download className="mr-1.5 size-4" />
-          Download PDF
+          {downloadHref ? 'Download PDF' : 'Preparing…'}
         </Button>
       ) : (
         <Button
