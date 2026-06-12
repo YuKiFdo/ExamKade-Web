@@ -167,6 +167,36 @@ export default function BulkImportPage() {
     });
   };
 
+  const deduceFacetKey = (part: string, allowed: string[], index: number): string | null => {
+    const clean = part.trim().toLowerCase();
+
+    if (allowed.includes('YEAR') && /^(19|20)\d{2}$/.test(clean)) {
+      return 'YEAR';
+    }
+    if (allowed.includes('GRADE') && (clean.includes('grade') || clean.includes('std') || /^(grade|g|std)\s*\d+$/i.test(clean))) {
+      return 'GRADE';
+    }
+    if (allowed.includes('TERM') && (clean.includes('term') || clean.includes('semester') || /^\d+(st|nd|rd|th)?\s*term$/i.test(clean))) {
+      return 'TERM';
+    }
+    if (allowed.includes('MEDIUM') && ['sinhala', 'english', 'tamil', 'si', 'en', 'ta'].includes(clean)) {
+      return 'MEDIUM';
+    }
+
+    if (index < allowed.length) {
+      const candidateKey = allowed[index];
+      if (candidateKey === 'YEAR') {
+        if (/^(19|20)\d{2}$/.test(clean)) {
+          return 'YEAR';
+        }
+        return null;
+      }
+      return candidateKey;
+    }
+
+    return null;
+  };
+
   // Parser for files with relative paths (handles folders, zip contents, etc.)
   const processFilesWithPaths = async (filesWithPaths: FileWithPath[]) => {
     // 1. Scan for target category in paths
@@ -202,6 +232,38 @@ export default function BulkImportPage() {
 
     const allowed = getAllowedKeysForCategory(targetCatId);
     const tempIdMap = new Map<string, BulkDocEntry>();
+    const sessionFacets = [...facets];
+
+    const getOrCreateFacetValue = async (facetKey: string, label: string): Promise<string | null> => {
+      const cleanLabel = label.trim();
+      let existing = sessionFacets.find(f => f.facetKey === facetKey && f.label.toLowerCase() === cleanLabel.toLowerCase());
+      if (existing) return existing.id;
+
+      try {
+        const slug = cleanLabel.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const response = await adminApi.createFacet({
+          facetKey,
+          label: cleanLabel,
+          slug: slug || 'value'
+        });
+        const newId = response.id;
+
+        const newFacetObj = {
+          id: newId,
+          label: cleanLabel,
+          facetKey,
+          slug: slug || 'value',
+          sortOrder: 0
+        };
+        
+        sessionFacets.push(newFacetObj);
+        setFacets(prev => [...prev, newFacetObj]);
+        return newId;
+      } catch (err) {
+        console.error('Failed to create facet value:', err);
+        return null;
+      }
+    };
 
     for (const item of filesWithPaths) {
       const parts = item.relativePath.split('/').filter(Boolean);
@@ -252,16 +314,33 @@ export default function BulkImportPage() {
         folderParts.splice(catIndex, 1);
       }
 
-      // Match folders with facets
+      // If there are more folders than filters to match, remove the container/root folders from the beginning
+      const keysToMatch = allowed.filter(k => k.toUpperCase() !== 'MEDIUM');
+      while (folderParts.length > keysToMatch.length && folderParts.length > 0) {
+        folderParts.shift();
+      }
+
+      // Match folders with facets (or create them dynamically)
       const selectedFacets: Record<string, string> = {};
-      for (const part of folderParts) {
+      for (let i = 0; i < folderParts.length; i++) {
+        const part = folderParts[i];
         const cleanPart = part.replace(/[-_]/g, ' ').trim().toLowerCase();
-        const matchedFacet = facets.find((f) => 
+        
+        let matchedFacet = sessionFacets.find((f) => 
           allowed.includes(f.facetKey) && 
           (f.label.toLowerCase() === cleanPart || f.id.toLowerCase() === cleanPart)
         );
+
         if (matchedFacet) {
           selectedFacets[matchedFacet.facetKey] = matchedFacet.id;
+        } else {
+          const deducedKey = deduceFacetKey(part, allowed, i);
+          if (deducedKey) {
+            const newFacetId = await getOrCreateFacetValue(deducedKey, part);
+            if (newFacetId) {
+              selectedFacets[deducedKey] = newFacetId;
+            }
+          }
         }
       }
 
@@ -274,11 +353,17 @@ export default function BulkImportPage() {
           if (mediumKey === 'englishFile') labelToFind = 'english';
           if (mediumKey === 'tamilFile') labelToFind = 'tamil';
           
-          const matchedFacet = facets.find((f) => 
+          let matchedFacet = sessionFacets.find((f) => 
             f.facetKey === mediumFacetKey && 
             f.label.toLowerCase() === labelToFind
           );
-          if (matchedFacet) {
+          
+          if (!matchedFacet) {
+            const newFacetId = await getOrCreateFacetValue(mediumFacetKey, labelToFind.charAt(0).toUpperCase() + labelToFind.slice(1));
+            if (newFacetId) {
+              selectedFacets[mediumFacetKey] = newFacetId;
+            }
+          } else {
             selectedFacets[mediumFacetKey] = matchedFacet.id;
           }
         }
