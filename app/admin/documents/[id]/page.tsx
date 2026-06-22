@@ -27,6 +27,7 @@ export default function EditDocumentPage() {
   } | null>(null);
   const [medium, setMedium] = useState('SINHALA');
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const load = () => {
     adminApi
@@ -41,13 +42,17 @@ export default function EditDocumentPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
+    setUploadProgress(0);
     try {
-      await adminApi.uploadFile(id, medium, file);
+      await adminApi.uploadFile(id, medium, file, (progress) => {
+        setUploadProgress(progress);
+      });
       load();
-    } catch {
-      alert('Upload failed');
+    } catch (err: any) {
+      alert(err.message || 'Upload failed');
     } finally {
       setUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -105,6 +110,20 @@ export default function EditDocumentPage() {
               />
             </div>
           </div>
+          {uploading && (
+            <div className="mt-4 w-full max-w-md">
+              <div className="flex justify-between text-sm text-muted-foreground mb-1">
+                <span>Uploading...</span>
+                <span>{uploadProgress}%</span>
+              </div>
+              <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div
+                  className="bg-primary h-full transition-all duration-150"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

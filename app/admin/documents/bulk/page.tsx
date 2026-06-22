@@ -41,6 +41,7 @@ export default function BulkImportPage() {
   const [loading, setLoading] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [importProgress, setImportProgress] = useState({ current: 0, total: 0 });
+  const [uploadFileProgress, setUploadFileProgress] = useState<{ name: string; percent: number } | null>(null);
 
   // Load categories and facets
   useEffect(() => {
@@ -789,19 +790,31 @@ export default function BulkImportPage() {
         );
 
         if (entry.sinhalaFile) {
-          await adminApi.uploadFile(docId, 'SINHALA', entry.sinhalaFile);
+          setUploadFileProgress({ name: `${entry.title} (Sinhala)`, percent: 0 });
+          await adminApi.uploadFile(docId, 'SINHALA', entry.sinhalaFile, (percent) => {
+            setUploadFileProgress({ name: `${entry.title} (Sinhala)`, percent });
+          });
         }
         if (entry.tamilFile) {
-          await adminApi.uploadFile(docId, 'TAMIL', entry.tamilFile);
+          setUploadFileProgress({ name: `${entry.title} (Tamil)`, percent: 0 });
+          await adminApi.uploadFile(docId, 'TAMIL', entry.tamilFile, (percent) => {
+            setUploadFileProgress({ name: `${entry.title} (Tamil)`, percent });
+          });
         }
         if (entry.englishFile) {
-          await adminApi.uploadFile(docId, 'ENGLISH', entry.englishFile);
+          setUploadFileProgress({ name: `${entry.title} (English)`, percent: 0 });
+          await adminApi.uploadFile(docId, 'ENGLISH', entry.englishFile, (percent) => {
+            setUploadFileProgress({ name: `${entry.title} (English)`, percent });
+          });
         }
+
+        setUploadFileProgress(null);
 
         setEntries((prev) =>
           prev.map((item) => (item.tempId === entry.tempId ? { ...item, importStatus: 'success' } : item))
         );
       } catch (err: any) {
+        setUploadFileProgress(null);
         setEntries((prev) =>
           prev.map((item) =>
             item.tempId === entry.tempId
@@ -977,13 +990,25 @@ export default function BulkImportPage() {
 
           {/* Progress Banner */}
           {isImporting && (
-            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div>
+            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex-1">
                 <p className="font-bold text-sm">Import Process In Progress</p>
                 <p className="text-xs text-muted-foreground">Document {importProgress.current} of {importProgress.total} is currently being created and attachments uploaded.</p>
+                {uploadFileProgress && (
+                  <p className="text-xs font-semibold text-primary mt-1">
+                    Uploading: {uploadFileProgress.name}... {uploadFileProgress.percent}%
+                  </p>
+                )}
               </div>
-              <div className="w-full sm:w-60 bg-muted rounded-full h-2.5 overflow-hidden">
-                <div className="bg-primary h-full transition-all duration-300" style={{ width: `${(importProgress.current / importProgress.total) * 100}%` }} />
+              <div className="flex flex-col gap-2 w-full md:w-60">
+                <div className="w-full bg-muted rounded-full h-2 overflow-hidden" title="Overall Progress">
+                  <div className="bg-slate-400 h-full transition-all duration-300" style={{ width: `${(importProgress.current / importProgress.total) * 100}%` }} />
+                </div>
+                {uploadFileProgress && (
+                  <div className="w-full bg-muted rounded-full h-2 overflow-hidden" title="Current File Upload Progress">
+                    <div className="bg-primary h-full transition-all duration-150" style={{ width: `${uploadFileProgress.percent}%` }} />
+                  </div>
+                )}
               </div>
             </div>
           )}

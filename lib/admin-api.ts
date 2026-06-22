@@ -122,13 +122,50 @@ export const adminApi = {
     }),
   deleteDocument: (id: string) =>
     adminFetch(`/documents/${id}`, { method: 'DELETE' }),
-  uploadFile: (documentId: string, medium: string, file: File) => {
-    const form = new FormData();
-    form.append('file', file);
-    form.append('medium', medium);
-    return adminFetch(`/documents/${documentId}/files`, {
-      method: 'POST',
-      body: form,
+  uploadFile: (
+    documentId: string,
+    medium: string,
+    file: File,
+    onProgress?: (percent: number) => void,
+  ) => {
+    return new Promise<any>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      const form = new FormData();
+      form.append('file', file);
+      form.append('medium', medium);
+
+      if (onProgress && xhr.upload) {
+        xhr.upload.addEventListener('progress', (event) => {
+          if (event.lengthComputable) {
+            const percent = Math.round((event.loaded / event.total) * 100);
+            onProgress(percent);
+          }
+        });
+      }
+
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            resolve(JSON.parse(xhr.responseText));
+          } catch {
+            resolve(xhr.responseText);
+          }
+        } else {
+          try {
+            const err = JSON.parse(xhr.responseText);
+            reject(new Error(err.message || `Request failed: ${xhr.status}`));
+          } catch {
+            reject(new Error(`Request failed: ${xhr.status}`));
+          }
+        }
+      });
+
+      xhr.addEventListener('error', () => reject(new Error('Network error during upload')));
+      xhr.addEventListener('abort', () => reject(new Error('Upload aborted')));
+
+      xhr.open('POST', `${API_URL}/admin/documents/${documentId}/files`);
+      xhr.withCredentials = true;
+      xhr.send(form);
     });
   },
   deleteFile: (fileId: string) =>
