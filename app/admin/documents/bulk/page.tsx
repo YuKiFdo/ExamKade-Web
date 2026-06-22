@@ -30,9 +30,17 @@ type FileWithPath = {
   relativePath: string;
 };
 
+type Category = {
+  id: string;
+  name: string;
+  rootType: string;
+  parentId: string | null;
+  allowedFilters: string[];
+};
+
 export default function BulkImportPage() {
   const router = useRouter();
-  const [categories, setCategories] = useState<{ id: string; name: string; rootType: string; parentId: string | null; allowedFilters: string[] }[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [facets, setFacets] = useState<FacetValue[]>([]);
   
   const [categoryId, setCategoryId] = useState('');
@@ -47,14 +55,14 @@ export default function BulkImportPage() {
   useEffect(() => {
     Promise.all([adminApi.categories(), adminApi.facets()])
       .then(([cats, f]) => {
-        setCategories(cats as typeof categories);
+        setCategories(cats as Category[]);
         setFacets(f as typeof facets);
       })
       .catch(() => router.push('/admin/login'));
   }, [router]);
 
   // Determine allowed filters (facets) for the selected category
-  const selectedCat = categories.find((c) => c.id === categoryId);
+  const selectedCat: Category | undefined = categories.find((c) => c.id === categoryId);
 
   const getAllowedKeysForCategory = (catId: string) => {
     const cat = categories.find((c) => c.id === catId);
