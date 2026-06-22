@@ -3,6 +3,7 @@ import { api } from '@/lib/api';
 import { PdfViewerClient } from '@/components/PdfViewerClient';
 import { ViewerActions } from '@/components/ViewerActions';
 import { Button } from '@/components/ui/button';
+import { cookies } from 'next/headers';
 
 type Props = {
   params: Promise<{ docId: string }>;
@@ -35,7 +36,11 @@ export default async function ViewPage({ params, searchParams }: Props) {
     );
   }
 
-  const previewUrl = await api.previewUrl(fileId);
+  const cookieStore = await cookies();
+  const token = cookieStore.get('access_token');
+  const headers: Record<string, string> = token ? { Cookie: `access_token=${token.value}` } : {};
+
+  const previewUrl = await api.previewUrl(fileId, headers);
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col bg-slate-50/30 dark:bg-zinc-950/20">
