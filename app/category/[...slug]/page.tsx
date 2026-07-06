@@ -25,13 +25,14 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { slug } = await params;
-  const { page: pageStr } = await searchParams;
+  const resolvedSearchParams = await searchParams;
+  const { page: pageStr, ...filters } = resolvedSearchParams;
   const path = slug.join('/');
   const page = pageStr ? parseInt(pageStr, 10) : 1;
 
   let data: Awaited<ReturnType<typeof api.getCategoryPage>>;
   try {
-    data = await api.getCategoryPage(path, page);
+    data = await api.getCategoryPage(path, page, filters);
   } catch {
     return (
       <div className="mx-auto max-w-7xl px-4 py-12 lg:px-6">

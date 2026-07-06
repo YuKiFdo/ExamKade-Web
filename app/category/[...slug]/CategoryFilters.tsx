@@ -78,7 +78,12 @@ export function CategoryFilters({
                 }}
               >
                 <SelectTrigger className="w-full h-10 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 rounded-xl font-medium text-sm">
-                  <SelectValue placeholder="All" />
+                  <SelectValue placeholder="All">
+                    {activeValue === 'ALL'
+                      ? 'All'
+                      : options.find((o) => o.slug === activeValue)?.label ||
+                        activeValue.split(/[-_]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                   <SelectItem value="ALL" className="rounded-lg">All</SelectItem>

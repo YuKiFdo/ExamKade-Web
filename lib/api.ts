@@ -56,13 +56,24 @@ export const api = {
   getRoots: () => fetchApi<RootCategory[]>('/categories/roots', { next: { revalidate: 0 } }),
   getLatest: (limit = 10) =>
     fetchApi<Document[]>(`/documents/latest?limit=${limit}`),
-  getCategoryPage: (path: string, page = 1) =>
-    fetchApi<{
+  getCategoryPage: (path: string, page = 1, filters?: Record<string, string | string[] | undefined>) => {
+    const q = new URLSearchParams();
+    q.set('path', path);
+    q.set('page', String(page));
+    if (filters) {
+      Object.entries(filters).forEach(([k, v]) => {
+        if (v !== undefined && v !== '') {
+          q.set(k, String(v));
+        }
+      });
+    }
+    return fetchApi<{
       breadcrumbs: RootCategory[];
       facetOptions: { key: string; options: FacetValue[] }[];
       documents: Document[];
       pagination: { page: number; limit: number; total: number; totalPages: number };
-    }>(`/categories/page?path=${encodeURIComponent(path)}&page=${page}`),
+    }>(`/categories/page?${q.toString()}`);
+  },
   searchDocuments: (params: Record<string, string | number | undefined>) => {
     const q = new URLSearchParams();
     Object.entries(params).forEach(([k, v]) => {
