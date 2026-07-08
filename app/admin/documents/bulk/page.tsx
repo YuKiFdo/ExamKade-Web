@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import JSZip from 'jszip';
 
-type FacetValue = { id: string; label: string; facetKey: string };
+type FacetValue = { id: string; label: string; facetKey: string; slug: string };
 
 type BulkDocEntry = {
   tempId: string;
@@ -262,7 +262,12 @@ export default function BulkImportPage() {
 
     const getOrCreateFacetValue = async (facetKey: string, label: string): Promise<string | null> => {
       const cleanLabel = label.trim();
-      let existing = sessionFacets.find(f => f.facetKey === facetKey && f.label.toLowerCase() === cleanLabel.toLowerCase());
+      const targetSlug = cleanLabel.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      
+      let existing = sessionFacets.find(f => 
+        f.facetKey === facetKey && 
+        (f.slug === targetSlug || f.label.toLowerCase().trim() === cleanLabel.toLowerCase())
+      );
       if (existing) return existing.id;
 
       try {
@@ -346,38 +351,30 @@ export default function BulkImportPage() {
         folderParts.shift();
       }
 
-      console.log('>>> Processing file:', item.relativePath);
-      console.log('>>> folderParts after filtering:', folderParts);
-
       // Match folders with facets (or create them dynamically)
       const selectedFacets: Record<string, string> = {};
       for (let i = 0; i < folderParts.length; i++) {
         const part = folderParts[i];
         const cleanPart = part.replace(/[-_]/g, ' ').trim().toLowerCase();
+        const targetSlug = cleanPart.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         
         let matchedFacet = sessionFacets.find((f) => 
           allowed.includes(f.facetKey) && 
-          (f.label.toLowerCase() === cleanPart || f.id.toLowerCase() === cleanPart)
+          (f.slug === targetSlug || f.label.toLowerCase().trim() === cleanPart || f.id.toLowerCase() === cleanPart)
         );
-
-        console.log(`>>> part "${part}" matchedFacet:`, matchedFacet ? `${matchedFacet.facetKey}:${matchedFacet.label}` : 'None');
 
         if (matchedFacet) {
           selectedFacets[matchedFacet.facetKey] = matchedFacet.id;
         } else {
           const deducedKey = deduceFacetKey(part, allowed, i);
-          console.log(`>>> part "${part}" deducedKey:`, deducedKey);
           if (deducedKey) {
             const newFacetId = await getOrCreateFacetValue(deducedKey, part);
-            console.log(`>>> created/retrieved facet ID for "${part}" (${deducedKey}):`, newFacetId);
             if (newFacetId) {
               selectedFacets[deducedKey] = newFacetId;
             }
           }
         }
       }
-
-      console.log('>>> Final selectedFacets:', selectedFacets);
 
       // Auto-match medium folder to MEDIUM facet if allowed and not already set
       const hasMediumFacet = allowed.some((key) => key.toUpperCase() === 'MEDIUM');
