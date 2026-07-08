@@ -205,4 +205,13 @@ export const adminApi = {
       method: 'POST',
       body: JSON.stringify({ showWarning }),
     }),
+  downloadCategoryZipTemplate: async (categoryId: string): Promise<Blob> => {
+    const res = await fetch(`${API_URL}/admin/categories/${categoryId}/template-zip`, {
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      throw new Error(`Download failed: ${res.status}`);
+    }
+    return res.blob();
+  },
 };

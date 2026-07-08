@@ -50,7 +50,7 @@ export default function BulkImportPage() {
   const [isImporting, setIsImporting] = useState(false);
   const [importProgress, setImportProgress] = useState({ current: 0, total: 0 });
   const [uploadFileProgress, setUploadFileProgress] = useState<{ name: string; percent: number } | null>(null);
-  const [zipProgress, setZipProgress] = useState<{ action: 'extract' | 'compress'; current: number; total: number; percent?: number } | null>(null);
+  const [zipProgress, setZipProgress] = useState<{ action: 'extract' | 'compress'; stage?: 'folders' | 'compress'; current: number; total: number; percent?: number } | null>(null);
 
   // Load categories and facets
   useEffect(() => {
@@ -582,40 +582,7 @@ export default function BulkImportPage() {
     setZipProgress({ action: 'compress', current: 0, total: 0, percent: 0 });
 
     try {
-      const allowed = getAllowedKeysForCategory(categoryId);
-      const hasMediumFacet = allowed.some((key) => key.toUpperCase() === 'MEDIUM');
-
-      const worker = new Worker(new URL('./zip.worker.ts', import.meta.url), { type: 'module' });
-
-      const zipArrayBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
-        worker.onmessage = (e) => {
-          const { type, percent, arrayBuffer, error } = e.data;
-          if (type === 'PROGRESS_ZIP') {
-            setZipProgress({ action: 'compress', current: 0, total: 0, percent });
-          } else if (type === 'SUCCESS_ZIP') {
-            resolve(arrayBuffer);
-            worker.terminate();
-          } else if (type === 'ERROR') {
-            reject(new Error(error));
-            worker.terminate();
-          }
-        };
-
-        worker.onerror = (err) => {
-          reject(err);
-          worker.terminate();
-        };
-
-        worker.postMessage({
-          action: 'TEMPLATE',
-          catName: cat.name,
-          allowed,
-          hasMediumFacet,
-          facets: facets.map(f => ({ id: f.id, label: f.label, facetKey: f.facetKey }))
-        });
-      });
-
-      const blob = new Blob([zipArrayBuffer], { type: 'application/zip' });
+      const blob = await adminApi.downloadCategoryZipTemplate(categoryId);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -697,9 +664,15 @@ export default function BulkImportPage() {
 
       const zipArrayBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
         worker.onmessage = (e) => {
-          const { type, percent, arrayBuffer, error } = e.data;
+          const { type, stage, current, total, percent, arrayBuffer, error } = e.data;
           if (type === 'PROGRESS_ZIP') {
-            setZipProgress({ action: 'compress', current: 0, total: 0, percent });
+            setZipProgress({ 
+              action: 'compress', 
+              stage, 
+              current: current || 0, 
+              total: total || 0, 
+              percent 
+            });
           } else if (type === 'SUCCESS_ZIP') {
             resolve(arrayBuffer);
             worker.terminate();
@@ -1104,7 +1077,9 @@ export default function BulkImportPage() {
                 <p className="text-xs text-muted-foreground">
                   {zipProgress.action === 'extract' 
                     ? `Processed ${zipProgress.current} files${zipProgress.total > 0 ? ` of ${zipProgress.total}` : ''}...` 
-                    : `Compressing files... ${zipProgress.percent}%`
+                    : zipProgress.stage === 'folders'
+                      ? `Generating template folders... ${zipProgress.current.toLocaleString()} of ${zipProgress.total.toLocaleString()}`
+                      : `Compressing files... ${zipProgress.percent}%`
                   }
                 </p>
               </div>
@@ -1115,7 +1090,9 @@ export default function BulkImportPage() {
                     style={{ 
                       width: zipProgress.action === 'extract' 
                         ? `${zipProgress.total > 0 ? (zipProgress.current / zipProgress.total) * 100 : 0}%` 
-                        : `${zipProgress.percent || 0}%` 
+                        : zipProgress.stage === 'folders'
+                          ? `${zipProgress.total > 0 ? (zipProgress.current / zipProgress.total) * 100 : 0}%`
+                          : `${zipProgress.percent || 0}%` 
                     }} 
                   />
                 </div>
