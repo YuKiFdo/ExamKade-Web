@@ -346,6 +346,9 @@ export default function BulkImportPage() {
         folderParts.shift();
       }
 
+      console.log('>>> Processing file:', item.relativePath);
+      console.log('>>> folderParts after filtering:', folderParts);
+
       // Match folders with facets (or create them dynamically)
       const selectedFacets: Record<string, string> = {};
       for (let i = 0; i < folderParts.length; i++) {
@@ -357,18 +360,24 @@ export default function BulkImportPage() {
           (f.label.toLowerCase() === cleanPart || f.id.toLowerCase() === cleanPart)
         );
 
+        console.log(`>>> part "${part}" matchedFacet:`, matchedFacet ? `${matchedFacet.facetKey}:${matchedFacet.label}` : 'None');
+
         if (matchedFacet) {
           selectedFacets[matchedFacet.facetKey] = matchedFacet.id;
         } else {
           const deducedKey = deduceFacetKey(part, allowed, i);
+          console.log(`>>> part "${part}" deducedKey:`, deducedKey);
           if (deducedKey) {
             const newFacetId = await getOrCreateFacetValue(deducedKey, part);
+            console.log(`>>> created/retrieved facet ID for "${part}" (${deducedKey}):`, newFacetId);
             if (newFacetId) {
               selectedFacets[deducedKey] = newFacetId;
             }
           }
         }
       }
+
+      console.log('>>> Final selectedFacets:', selectedFacets);
 
       // Auto-match medium folder to MEDIUM facet if allowed and not already set
       const hasMediumFacet = allowed.some((key) => key.toUpperCase() === 'MEDIUM');
