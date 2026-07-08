@@ -50,6 +50,7 @@ export default function BulkImportPage() {
   const [isImporting, setIsImporting] = useState(false);
   const [importProgress, setImportProgress] = useState({ current: 0, total: 0 });
   const [uploadFileProgress, setUploadFileProgress] = useState<{ name: string; percent: number } | null>(null);
+  const [zipProgress, setZipProgress] = useState<{ action: 'extract' | 'compress'; current: number; total: number; percent?: number } | null>(null);
 
   // Load categories and facets
   useEffect(() => {
@@ -435,19 +436,43 @@ export default function BulkImportPage() {
   };
 
   const processZipFile = async (file: File) => {
-    try {
-      const zip = new JSZip();
-      const loadedZip = await zip.loadAsync(file);
-      const filesWithPaths: FileWithPath[] = [];
+    setLoading(true);
+    setZipProgress({ action: 'extract', current: 0, total: 0 });
 
-      for (const [relativePath, zipEntry] of Object.entries(loadedZip.files)) {
-        if (!zipEntry.dir && relativePath.toLowerCase().endsWith('.pdf')) {
-          const blob = await zipEntry.async('blob');
-          const filename = relativePath.split('/').pop() || 'document.pdf';
-          const pdfFile = new File([blob], filename, { type: 'application/pdf' });
-          filesWithPaths.push({ file: pdfFile, relativePath });
-        }
-      }
+    try {
+      const fileArrayBuffer = await file.arrayBuffer();
+      const worker = new Worker(new URL('./zip.worker.ts', import.meta.url), { type: 'module' });
+
+      const filesWithPaths: FileWithPath[] = await new Promise((resolve, reject) => {
+        worker.onmessage = (e) => {
+          const { type, current, total, files, error } = e.data;
+
+          if (type === 'PROGRESS') {
+            setZipProgress({ action: 'extract', current, total });
+          } else if (type === 'SUCCESS_UNZIP') {
+            const results = files.map((f: any) => {
+              const blob = new Blob([f.arrayBuffer], { type: 'application/pdf' });
+              const pdfFile = new File([blob], f.name, { type: 'application/pdf' });
+              return { file: pdfFile, relativePath: f.relativePath };
+            });
+            resolve(results);
+            worker.terminate();
+          } else if (type === 'ERROR') {
+            reject(new Error(error));
+            worker.terminate();
+          }
+        };
+
+        worker.onerror = (err) => {
+          reject(err);
+          worker.terminate();
+        };
+
+        worker.postMessage({ action: 'UNZIP', fileArrayBuffer }, [fileArrayBuffer]);
+      });
+
+      setZipProgress(null);
+      setLoading(false);
 
       if (filesWithPaths.length === 0) {
         alert('No PDF files found inside the uploaded ZIP file.');
@@ -457,6 +482,8 @@ export default function BulkImportPage() {
       await processFilesWithPaths(filesWithPaths);
     } catch (err: any) {
       console.error(err);
+      setZipProgress(null);
+      setLoading(false);
       alert('Failed to parse ZIP file: ' + err.message);
     }
   };
@@ -607,58 +634,99 @@ export default function BulkImportPage() {
       return;
     }
 
-    const cat = categories.find((c) => c.id === categoryId);
-    const catName = cat ? cat.name : 'Bulk_Import';
-    const zip = new JSZip();
-    const allowed = getAllowedKeysForCategory(categoryId);
-    const hasMediumFacet = allowed.some((key) => key.toUpperCase() === 'MEDIUM');
+    setLoading(true);
+    setZipProgress({ action: 'compress', current: 0, total: 0, percent: 0 });
 
-    for (const item of entries) {
-      const facetPaths: string[] = [];
-      for (const key of allowed) {
-        const valId = item.selectedFacets[key];
-        if (valId) {
-          const opt = facets.find((f) => f.id === valId);
-          if (opt) {
-            facetPaths.push(opt.label.replace(/[\\/:*?"<>|]/g, '-'));
+    try {
+      const cat = categories.find((c) => c.id === categoryId);
+      const catName = cat ? cat.name : 'Bulk_Import';
+      const allowed = getAllowedKeysForCategory(categoryId);
+      const hasMediumFacet = allowed.some((key) => key.toUpperCase() === 'MEDIUM');
+
+      const filesToZip: { arrayBuffer: ArrayBuffer; path: string }[] = [];
+
+      for (const item of entries) {
+        const facetPaths: string[] = [];
+        for (const key of allowed) {
+          const valId = item.selectedFacets[key];
+          if (valId) {
+            const opt = facets.find((f) => f.id === valId);
+            if (opt) {
+              facetPaths.push(opt.label.replace(/[\\/:*?"<>|]/g, '-'));
+            }
+          }
+        }
+
+        const baseFolder = [catName, ...facetPaths].join('/');
+        const filesToAdd: { file?: File; path: string }[] = [];
+
+        if (hasMediumFacet) {
+          if (item.sinhalaFile) filesToAdd.push({ file: item.sinhalaFile, path: `${baseFolder}/${item.sinhalaFile.name}` });
+          if (item.tamilFile) filesToAdd.push({ file: item.tamilFile, path: `${baseFolder}/${item.tamilFile.name}` });
+          if (item.englishFile) filesToAdd.push({ file: item.englishFile, path: `${baseFolder}/${item.englishFile.name}` });
+        } else {
+          if (item.sinhalaFile) filesToAdd.push({ file: item.sinhalaFile, path: `${baseFolder}/Sinhala/${item.sinhalaFile.name}` });
+          if (item.tamilFile) filesToAdd.push({ file: item.tamilFile, path: `${baseFolder}/Tamil/${item.tamilFile.name}` });
+          if (item.englishFile) filesToAdd.push({ file: item.englishFile, path: `${baseFolder}/English/${item.englishFile.name}` });
+        }
+
+        for (const add of filesToAdd) {
+          if (add.file) {
+            const ab = await add.file.arrayBuffer();
+            filesToZip.push({
+              arrayBuffer: ab,
+              path: add.path
+            });
           }
         }
       }
 
-      const baseFolder = [catName, ...facetPaths].join('/');
-      
-      if (hasMediumFacet) {
-        if (item.sinhalaFile) {
-          zip.file(`${baseFolder}/${item.sinhalaFile.name}`, item.sinhalaFile);
-        }
-        if (item.tamilFile) {
-          zip.file(`${baseFolder}/${item.tamilFile.name}`, item.tamilFile);
-        }
-        if (item.englishFile) {
-          zip.file(`${baseFolder}/${item.englishFile.name}`, item.englishFile);
-        }
-      } else {
-        if (item.sinhalaFile) {
-          zip.file(`${baseFolder}/Sinhala/${item.sinhalaFile.name}`, item.sinhalaFile);
-        }
-        if (item.tamilFile) {
-          zip.file(`${baseFolder}/Tamil/${item.tamilFile.name}`, item.tamilFile);
-        }
-        if (item.englishFile) {
-          zip.file(`${baseFolder}/English/${item.englishFile.name}`, item.englishFile);
-        }
+      if (filesToZip.length === 0) {
+        alert('No files found to export.');
+        setLoading(false);
+        setZipProgress(null);
+        return;
       }
-    }
 
-    try {
-      const blob = await zip.generateAsync({ type: 'blob' });
+      const worker = new Worker(new URL('./zip.worker.ts', import.meta.url), { type: 'module' });
+
+      const zipArrayBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+        worker.onmessage = (e) => {
+          const { type, percent, arrayBuffer, error } = e.data;
+          if (type === 'PROGRESS_ZIP') {
+            setZipProgress({ action: 'compress', current: 0, total: 0, percent });
+          } else if (type === 'SUCCESS_ZIP') {
+            resolve(arrayBuffer);
+            worker.terminate();
+          } else if (type === 'ERROR') {
+            reject(new Error(error));
+            worker.terminate();
+          }
+        };
+
+        worker.onerror = (err) => {
+          reject(err);
+          worker.terminate();
+        };
+
+        const transferables = filesToZip.map(f => f.arrayBuffer);
+        worker.postMessage({ action: 'ZIP', files: filesToZip }, transferables);
+      });
+
+      const blob = new Blob([zipArrayBuffer], { type: 'application/zip' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `${catName.replace(/\s+/g, '_')}_batch.zip`;
       a.click();
       URL.revokeObjectURL(url);
+      
+      setZipProgress(null);
+      setLoading(false);
     } catch (err: any) {
+      console.error(err);
+      setZipProgress(null);
+      setLoading(false);
       alert('Failed to generate batch ZIP: ' + err.message);
     }
   };
@@ -1017,6 +1085,35 @@ export default function BulkImportPage() {
                     <div className="bg-primary h-full transition-all duration-150" style={{ width: `${uploadFileProgress.percent}%` }} />
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* ZIP Progress Banner */}
+          {zipProgress && (
+            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex-1">
+                <p className="font-bold text-sm">
+                  {zipProgress.action === 'extract' ? 'Extracting ZIP Archive' : 'Generating ZIP Archive'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {zipProgress.action === 'extract' 
+                    ? `Processed ${zipProgress.current} files${zipProgress.total > 0 ? ` of ${zipProgress.total}` : ''}...` 
+                    : `Compressing files... ${zipProgress.percent}%`
+                  }
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 w-full md:w-60">
+                <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                  <div 
+                    className="bg-primary h-full transition-all duration-150" 
+                    style={{ 
+                      width: zipProgress.action === 'extract' 
+                        ? `${zipProgress.total > 0 ? (zipProgress.current / zipProgress.total) * 100 : 0}%` 
+                        : `${zipProgress.percent || 0}%` 
+                    }} 
+                  />
+                </div>
               </div>
             </div>
           )}
