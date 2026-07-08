@@ -578,52 +578,57 @@ export default function BulkImportPage() {
     const cat = categories.find((c) => c.id === categoryId);
     if (!cat) return;
 
-    const zip = new JSZip();
-    const allowed = getAllowedKeysForCategory(categoryId);
-    const hasMediumFacet = allowed.some((key) => key.toUpperCase() === 'MEDIUM');
-
-    const facetOptionsList = allowed.map((key) => ({
-      key,
-      options: facets.filter((f) => f.facetKey === key)
-    }));
-
-    const buildPath = (index: number, currentParts: string[]) => {
-      if (index === facetOptionsList.length) {
-        if (hasMediumFacet) {
-          const path = [cat.name, ...currentParts].join('/');
-          zip.file(`${path}/place_pdfs_here.txt`, `Place your PDF files here.\nFiles inside this folder will automatically be assigned the corresponding facets: ${currentParts.join(', ')}.`);
-        } else {
-          const mediums = ['Sinhala', 'English', 'Tamil'];
-          for (const med of mediums) {
-            const path = [cat.name, ...currentParts, med].join('/');
-            zip.file(`${path}/place_pdfs_here.txt`, `Place your ${med} medium PDF files here.\nFiles inside this folder will automatically be assigned the ${med} medium and facets: ${currentParts.join(', ')}.`);
-          }
-        }
-        return;
-      }
-
-      const { options } = facetOptionsList[index];
-      if (options.length === 0) {
-        buildPath(index + 1, currentParts);
-      } else {
-        for (const opt of options) {
-          const safeLabel = opt.label.replace(/[\\/:*?"<>|]/g, '-');
-          buildPath(index + 1, [...currentParts, safeLabel]);
-        }
-      }
-    };
-
-    buildPath(0, []);
+    setLoading(true);
+    setZipProgress({ action: 'compress', current: 0, total: 0, percent: 0 });
 
     try {
-      const blob = await zip.generateAsync({ type: 'blob' });
+      const allowed = getAllowedKeysForCategory(categoryId);
+      const hasMediumFacet = allowed.some((key) => key.toUpperCase() === 'MEDIUM');
+
+      const worker = new Worker(new URL('./zip.worker.ts', import.meta.url), { type: 'module' });
+
+      const zipArrayBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+        worker.onmessage = (e) => {
+          const { type, percent, arrayBuffer, error } = e.data;
+          if (type === 'PROGRESS_ZIP') {
+            setZipProgress({ action: 'compress', current: 0, total: 0, percent });
+          } else if (type === 'SUCCESS_ZIP') {
+            resolve(arrayBuffer);
+            worker.terminate();
+          } else if (type === 'ERROR') {
+            reject(new Error(error));
+            worker.terminate();
+          }
+        };
+
+        worker.onerror = (err) => {
+          reject(err);
+          worker.terminate();
+        };
+
+        worker.postMessage({
+          action: 'TEMPLATE',
+          catName: cat.name,
+          allowed,
+          hasMediumFacet,
+          facets: facets.map(f => ({ id: f.id, label: f.label, facetKey: f.facetKey }))
+        });
+      });
+
+      const blob = new Blob([zipArrayBuffer], { type: 'application/zip' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `${cat.name.replace(/\s+/g, '_')}_template.zip`;
       a.click();
       URL.revokeObjectURL(url);
+      
+      setZipProgress(null);
+      setLoading(false);
     } catch (err: any) {
+      console.error(err);
+      setZipProgress(null);
+      setLoading(false);
       alert('Failed to generate template: ' + err.message);
     }
   };
