@@ -183,14 +183,30 @@ export default function BulkImportPage() {
     if (allowed.includes('YEAR') && /^(19|20)\d{2}$/.test(clean)) {
       return 'YEAR';
     }
-    if (allowed.includes('GRADE') && (clean.includes('grade') || clean.includes('std') || /^(grade|g|std)\s*\d+$/i.test(clean))) {
-      return 'GRADE';
+    if (allowed.includes('GRADE') && (clean.includes('grade') || clean.includes('std') || /^(grade|g|std)\s*\d+$/i.test(clean) || /^\d+$/.test(clean))) {
+      if (/^\d+$/.test(clean)) {
+        const val = parseInt(clean, 10);
+        if (val >= 1 && val <= 13) return 'GRADE';
+      } else {
+        return 'GRADE';
+      }
     }
     if (allowed.includes('TERM') && (clean.includes('term') || clean.includes('semester') || /^\d+(st|nd|rd|th)?\s*term$/i.test(clean))) {
       return 'TERM';
     }
     if (allowed.includes('MEDIUM') && ['sinhala', 'english', 'tamil', 'si', 'en', 'ta'].includes(clean)) {
       return 'MEDIUM';
+    }
+    const provinces = ['western', 'southern', 'eastern', 'northern', 'north central', 'north western', 'uva', 'sabaragamuwa', 'central', 'wp', 'sp', 'ep', 'np', 'ncp', 'nwp', 'up', 'sgp', 'cp', 'province'];
+    if (allowed.includes('PROVINCE') && provinces.some(p => clean.includes(p))) {
+      return 'PROVINCE';
+    }
+    if (allowed.includes('EXAM') && (clean.includes('ol') || clean.includes('al') || clean.includes('level') || clean.includes('scholarship') || clean.includes('exam'))) {
+      return 'EXAM';
+    }
+
+    if (allowed.includes('SUBJECT')) {
+      return 'SUBJECT';
     }
 
     if (index < allowed.length) {
